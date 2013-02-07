@@ -1,21 +1,34 @@
 perl-plugin
 ===========
 
-build, deploy and test perl applications with jenkins CI server 
+build, deploy and test perl based applications with jenkins CI server 
 
 prerequisites
 ===
-- cpanminus
-- rvm
-- ruby 1.8.7
 
+following packages should be installed:
+
+- [App::cpanminus](http://search.cpan.org/perldoc?App%3A%3Acpanminus)
+- unzip
+- ruby
+- ruby bundler
+
+environment variables taking into account:
+===
+These variables are optional, but will be taking into account when are set:
+- HOME (jenkins user home directory)
+- http_proxy
+- rvm_path
+- cpan_mirror
+
+You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface.
 
 exported builders
 ===
 
 ## perl_builder
 
-This is smart builder for perl based applications. Builder algorithm:
+This is the smart builder for perl based applications. Builder algorithm is:
 
 - for every subdirectory in `$WORKSPACE/svn/*/` list founds "last tag" directory (with the biggest version postfix) -  `$WORKSPACE/svn/*/<last_tag>`
 - for every `<last_tag>` directory:
@@ -63,6 +76,12 @@ or install downgraded versions. Patches are the right way to this. Once patches 
 
 exported publishers
 ===
+
+\*\*\* before add perl_publisher to post-build actions add artefacts archivator as follows \*\*\*:
+
+[archived artefacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artefacts.png "archive artefacts")
+
+- artefact candidates should be taken from `$WORKSPACE/build` directory
 
 ## perl_publisher
 

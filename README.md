@@ -77,7 +77,7 @@ or install downgraded versions. Patches are the right way to this. Once patches 
 exported publishers
 ===
 
-\*\*\* before add perl_publisher as post-build actions add artefacts archivator as follows !!!: \*\*\*
+\*\*\* before add perl_publisher as post-build actions add artefacts archivator as follows !!! \*\*\*
 
 ![archived artefacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artefacts.png "archive artefacts")
 

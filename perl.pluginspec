@@ -15,7 +15,7 @@ Jenkins::Plugin::Specification.new do |plugin|
   # This specifies where your code is hosted.
   # Alternatives include:
   #  :github => 'myuser/foo-plugin' (without myuser it defaults to jenkinsci)
-   :github => melezhik / perl-plugin
+   :github => melezhik/perl-plugin
   #  :git => 'git://repo.or.cz/foo-plugin.git'
   #  :svn => 'https://svn.jenkins-ci.org/trunk/hudson/plugins/foo-plugin'
   # plugin.uses_repository :github => "perl-plugin"

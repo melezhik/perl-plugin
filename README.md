@@ -10,7 +10,7 @@ exported builders
 - perl_builder
 
 This is smart builder for perl based applications. Builder algorithm:
-- goes through $WORKSPACE/svn/* directories - `'applications'`
+- goes through $WORKSPACE/svn/* directories - 'applications'
 - for every application founds last tag if possible ($WORKSPACE/svn/\*/\*/)
 - for every found tag makes installation:
     - set-up local::lib environment 
@@ -21,7 +21,8 @@ This is smart builder for perl based applications. Builder algorithm:
     - adds $WORKSPACE/cpanlib into distributive tarball
     - copies distributive to artefacts directory ($WORKSPACE/build)
 
-- example layout:
+
+example layout:
 
     $WORKSPACE/svn/module/version-0.0.1
     $WORKSPACE/svn/module/version-0.0.2
@@ -31,6 +32,6 @@ This is smart builder for perl based applications. Builder algorithm:
 - tags found : $WORKSPACE/svn/module/version-0.0.1, $WORKSPACE/svn/app/version-0.2.0, 
 - distributive made from: $WORKSPACE/svn/app/version-0.2.0
 
-exported publshers
+exported publishers
 ===
 - perl_publisher

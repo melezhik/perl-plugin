@@ -1,0 +1,53 @@
+<%
+
+f = taglib("/lib/form")
+
+f.block do
+
+    f.entry(:title => 'run build process', :field => 'run_build', :description => "run build process") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'enable catalyst debug mode', :field => 'catalyst_debug', :description => "run catalyst tests in debug mode") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'do not lookup last tag', :field => 'skip_last_tag', :description => "build from project's source dir, not last tag one") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'chef json template', :field => 'chef_json_template', :description => "use ERB syntax; %src% will be replaced by url to artifact") do
+      f.textarea
+    end
+
+    #f.entry(:title => 'it.class', :field => 'foo0', :description => "it.class") do
+    #  f.textarea(:value=>it.class)
+    #end
+
+    #f.entry(:title => 'it.public_methods', :field => 'foo00', :description => "it.public_methods") do
+    #  f.textarea(:value=>it.public_methods.sort.join("\n"))
+    #end
+
+    #f.entry(:title => 'getBuilders.first.class', :field => 'foo1', :description => "getBuilders.first.class") do
+    #  f.textarea(:value=>it.getBuilders.first.class)
+    #end
+
+    #f.entry(:title => 'getBuilders.first.public_methods', :field => 'foo2', :description => "getBuilders.first.public_methods") do
+    #  f.textarea(:value=>it.getBuilders.first.public_methods.sort.join("\n"))
+    #end
+
+    f.entry(:title => 'verbosity type', :field => 'verbosity_type', :description => "type of verbosity") do
+        f.radio(:name => 'verbosity_type', :value=>'none', :checked => it.getBuilders.first.get("verbosity_type") == 'none' ? true : false, :title => 'None' )
+        f.radio(:name => 'verbosity_type', :value=>'medium', :checked => it.getBuilders.first.get("verbosity_type") == 'medium' ? true : false, :title => 'Medium' )
+        f.radio(:name => 'verbosity_type', :value=>'high', :checked => it.getBuilders.first.get("verbosity_type") == 'high' ? true : false, :title => 'High' )
+    end
+
+    f.advanced do    
+        f.entry(:title => 'patches', :field => 'patches', :description => "apply your pacthes, see http://search.cpan.org/perldoc?cpanm for details") do
+          f.expandableTextbox
+        end
+    end
+
+end
+%>
+

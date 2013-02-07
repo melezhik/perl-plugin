@@ -1,0 +1,18 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    blockenspiel (0.4.5)
+    jenkins-plugin-runtime (0.2.3)
+      json
+      slop (~> 3.0.2)
+    json (1.7.6-java)
+    slop (3.0.4)
+    versionomy (0.4.4)
+      blockenspiel (>= 0.4.5)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  jenkins-plugin-runtime (~> 0.2.3)
+  versionomy

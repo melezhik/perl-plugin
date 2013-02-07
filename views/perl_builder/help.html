@@ -1,0 +1,23 @@
+<p>
+This is smart builder for perl based applications
+    <ul>
+        <li>
+        goes through svn/ directories - aka 'projects'
+        </li>
+        <li>
+        founds last tag if possible for every project
+        </li>
+        <li>
+        <ul>for every project/tag : makes installation and optionally creates distributive, namely:
+             <li>installs from source code with `cpanm . ` command into $WORKSPACE/cpanlib</li>
+             <li>
+                <ul>if project == 'app/' 
+                    <li>makes distributive</li>  
+                    <li>mixes in $WORKSPACE/cpanlib into distributive</li>  
+                    <li>copies all to artifacts directory</li>
+                </ul>
+             </li>  
+        </ul>
+        </li>
+    </ul>
+</p>

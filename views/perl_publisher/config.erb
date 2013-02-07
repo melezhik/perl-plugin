@@ -1,0 +1,30 @@
+<%
+f = taglib("/lib/form")
+
+f.entry(:title => 'run deploy', :field => 'run_deploy', :description => "enable this to run deploy on remote machine") do
+  f.checkbox
+end
+
+f.entry(:title => 'ssh host', :field => 'ssh_host', :description => "deployable remote machine") do
+  f.textbox
+end
+f.entry(:title => 'ssh login', :field => 'ssh_login', :description => "ssh login") do
+  f.textbox
+end
+f.entry(:title => 'chef-client config', :field => 'chef_client_config', :description => "optionally you may set path to chef-client configuration file") do
+  f.textbox
+end
+
+f.entry(:title => '<b>run tests</b>', :field => 'run_test', :description => "enable this to run cucumber tests against remote machine") do
+  f.checkbox
+end
+
+f.entry(:title => 'cucumber profile', :field => 'cucumber_profile', :description => "cucumber profile") do
+  f.textbox
+end
+
+f.entry(:title => 'display id', :field => 'display', :description => "set up this to run tests under Xvfb or Xvnc") do
+  f.textbox
+end
+
+%>

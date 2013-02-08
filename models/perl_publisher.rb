@@ -3,7 +3,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
     attr_accessor :run_deploy, :run_test, :cucumber_profile, :browser, :display
     attr_accessor :ssh_host, :ssh_login, :chef_client_config
 
-    display_name "run deploy on remote server"
+    display_name "Deploy and test perl project"
 
     def initialize(attrs = {})
         @run_deploy = attrs["run_deploy"]

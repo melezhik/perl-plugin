@@ -9,7 +9,6 @@ prerequisites
 following packages should be installed:
 
 - [App::cpanminus](http://search.cpan.org/perldoc?App%3A%3Acpanminus)
-- unzip
 - ruby installed with rvm
 - ruby bundler
 

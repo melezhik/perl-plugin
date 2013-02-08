@@ -19,6 +19,9 @@ class PerlPublisher < Jenkins::Tasks::Publisher
     def prebuild(build, listener)
     end
 
+    def default_ruby_version
+        '1.8.7'
+    end
     def perform(build, launcher, listener)
 
         env = build.native.getEnvironment()
@@ -52,16 +55,22 @@ class PerlPublisher < Jenkins::Tasks::Publisher
             listener.info "run tests against remote server: #{@ssh_host}"
 
             test_pass_ok = true
+            ruby_version = env['ruby_version'] || default_ruby_version
 
             Dir.glob("#{workspace}/cucumber/*").select {|f| File.directory? f}.each do |d|
                 listener.info "run #{d} tests"
                 cmd = []
-                cmd << "source #{env['HOME']}/.rvm/scripts/rvm"
                 cmd << "export LC_ALL=ru_RU.UTF-8"
+                if launcher.execute("bash", "-c", 'rvm' ) == 0
+                    listener.info "found rvm configured"
+                else
+                    listener.info "rvm configured not found ... hope it's okay, will try to load it as {env['HOME']}/.rvm/scripts/rvm"
+                    cmd << "source #{env['HOME']}/.rvm/scripts/rvm"
+                end
                 cmd << "export http_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "export https_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "cd #{d}"
-                cmd << 'rvm use 1.8.7'
+                cmd << "rvm use #{ruby_version}"
                 cmd << "bundle"
                 display = ''
                 display = "DISPLAY=#{@display}" unless @display.nil? || @display.empty?    

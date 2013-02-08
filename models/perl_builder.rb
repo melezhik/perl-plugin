@@ -19,8 +19,8 @@ class PerlBuilder < Jenkins::Tasks::Builder
         @patches = attrs["patches"] || ""
         @chef_json_template = attrs["chef_json_template"]
     end
-    def foo
-        "foo-bar"
+    def default_cpan_mirror
+        "http://cpan.dk"
     end
     ##
     # Runs before the build begins
@@ -45,6 +45,8 @@ class PerlBuilder < Jenkins::Tasks::Builder
         listener.info("verbosity_type: #{@verbosity_type}")
         listener.info("run_build: #{@run_build}")
         workspace = build.send(:native).workspace.to_s
+        cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
+        cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 
         # clean up old build directory
         listener.info "clean up #{workspace}/build directory"
@@ -74,7 +76,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export LC_ALL=ru_RU.UTF-8"
                 cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-                cmd << "cpanm --curl #{cpan_mini_verbose} --mirror http://cpan.webdev.x/CPAN  --mirror-only #{l}"
+                cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} #{l}"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end  
 
@@ -97,7 +99,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export LC_ALL=ru_RU.UTF-8 && cd #{last_tag}"
                 cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-                cmd << "cpanm --curl #{cpan_mini_verbose} --mirror http://cpan.webdev.x/CPAN  --mirror-only ."
+                cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end  
 

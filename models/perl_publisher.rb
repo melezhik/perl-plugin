@@ -56,6 +56,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
 
             test_pass_ok = true
             ruby_version = env['ruby_version'] || default_ruby_version
+            listener.info "ruby_version: #{ruby_version}"                
 
             Dir.glob("#{workspace}/cucumber/*").select {|f| File.directory? f}.each do |d|
                 listener.info "run #{d} tests"
@@ -65,7 +66,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
                 cmd << "export http_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "export https_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "cd #{d}"
-                cmd << "rvm use #{ruby_version}"
+                cmd << "rvm use ruby #{ruby_version}"
                 cmd << "bundle"
                 display = ''
                 display = "DISPLAY=#{@display}" unless @display.nil? || @display.empty?    

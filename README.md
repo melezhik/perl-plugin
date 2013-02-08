@@ -9,7 +9,7 @@ prerequisites
 following packages should be installed:
 
 - [App::cpanminus](http://search.cpan.org/perldoc?App%3A%3Acpanminus)
-- ruby installed with rvm with `single-user install mode`
+- ruby installed with rvm in `single-user install mode`
 - ruby bundler
 
 environment variables taking into account:

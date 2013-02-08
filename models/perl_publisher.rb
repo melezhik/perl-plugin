@@ -1,6 +1,6 @@
 class PerlPublisher < Jenkins::Tasks::Publisher
 
-    attr_accessor :run_deploy, :run_test, :cucumber_profile, :browser, :display
+    attr_accessor :run_deploy, :run_test, :cucumber_profile, :browser, :display, :color_output
     attr_accessor :ssh_host, :ssh_login, :chef_client_config
 
     display_name "Deploy and test perl project"
@@ -14,6 +14,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
         @cucumber_profile = attrs["cucumber_profile"]
         @browser = attrs["browser"] || 'chrome'
         @display = attrs["display"]
+        @color_output = attrs["color_output"]
     end
 
     def prebuild(build, listener)
@@ -55,7 +56,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
             listener.info "run tests against remote server: #{@ssh_host}"
 
             test_pass_ok = true
-            ruby_version = env['ruby_version'] || default_ruby_version
+            ruby_version = env['cucumber_ruby_version'] || default_ruby_version
             listener.info "ruby_version: #{ruby_version}"                
 
             Dir.glob("#{workspace}/cucumber/*").select {|f| File.directory? f}.each do |d|
@@ -70,7 +71,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
                 cmd << "bundle"
                 display = ''
                 display = "DISPLAY=#{@display}" unless @display.nil? || @display.empty?    
-                cmd << "bundle exec cucumber -p #{@cucumber_profile} -c no_proxy=127.0.0.1 browser=#{@browser} #{display}"
+                cmd << "bundle exec cucumber -p #{@cucumber_profile} -c no_proxy=127.0.0.1 browser=#{@browser} #{display} #{@color_output == true ? '--color' : '--no-color'}"
                 test_pass_ok = false if launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) != 0
             end 
             build.abort if test_pass_ok == false

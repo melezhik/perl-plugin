@@ -17,7 +17,7 @@ environment variables taking into account:
 These variables are optional, but will be taking into account when are set:
 - cpan_mirror
 - http_proxy
-- ruby_version
+- cucumber\_ruby\_version
 
 You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface.
 

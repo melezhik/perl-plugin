@@ -4,6 +4,16 @@ f = taglib("/lib/form")
 
 f.block do
 
+    #it.getBuilders.each {|b| f.readOnlyTextbox(:value => b.get('class').class) }
+                                                                 
+    perl_builder = it.getBuilders.select {|b| b.get('class').to_s == 'PerlBuilder' }.first
+    if perl_builder.nil? # first time usage of plugin in project
+        verbosity_type = 'none'
+        f.readOnlyTextbox(:value => 'welcome to the PerlBuilder, I see you use the plugin in the project for the first time')
+    else
+        verbosity_type = perl_builder.get('verbosity_type')
+    end 
+
     f.entry(:title => 'run build process', :field => 'run_build', :description => "run build process") do
       f.checkbox
     end
@@ -28,23 +38,23 @@ f.block do
     #  f.textarea(:value=>it.public_methods.sort.join("\n"))
     #end
 
-    #f.entry(:title => 'getBuilders.first.class', :field => 'foo1', :description => "getBuilders.first.class") do
-    #  f.textarea(:value=>it.getBuilders.first.class)
-    #end
-
     #f.entry(:title => 'getBuilders.first.public_methods', :field => 'foo2', :description => "getBuilders.first.public_methods") do
     #  f.textarea(:value=>it.getBuilders.first.public_methods.sort.join("\n"))
     #end
 
+    #f.entry(:title => 'it.getBuilders.first.get("class")', :field => 'foo6', :description => "it.getBuilders.first.get('class')") do
+    #  f.textarea(:value=>it.getBuilders.first.get('class'))
+    #end
+
     f.entry(:title => 'verbosity type', :field => 'verbosity_type', :description => "type of verbosity") do
-        f.radio(:name => 'verbosity_type', :value=>'none', :checked => it.getBuilders.first.get("verbosity_type") == 'none' ? true : false, :title => 'None' )
-        f.radio(:name => 'verbosity_type', :value=>'medium', :checked => it.getBuilders.first.get("verbosity_type") == 'medium' ? true : false, :title => 'Medium' )
-        f.radio(:name => 'verbosity_type', :value=>'high', :checked => it.getBuilders.first.get("verbosity_type") == 'high' ? true : false, :title => 'High' )
+        f.radio(:name => 'verbosity_type', :value=>'none', :checked => verbosity_type == 'none' ? true : false, :title => 'None' )
+        f.radio(:name => 'verbosity_type', :value=>'medium', :checked => verbosity_type == 'medium' ? true : false, :title => 'Medium' )
+        f.radio(:name => 'verbosity_type', :value=>'high', :checked => verbosity_type == 'high' ? true : false, :title => 'High' )
     end
 
     f.advanced do    
         f.entry(:title => 'patches', :field => 'patches', :description => "apply your pacthes, see http://search.cpan.org/perldoc?cpanm for details") do
-          f.expandableTextbox
+          f.textarea
         end
     end
 

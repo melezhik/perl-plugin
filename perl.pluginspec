@@ -18,7 +18,7 @@ Jenkins::Plugin::Specification.new do |plugin|
   #  :github => 'melezhik/perl-plugin'
   #  :git => 'git://repo.or.cz/foo-plugin.git'
   #  :svn => 'https://svn.jenkins-ci.org/trunk/hudson/plugins/foo-plugin'
-  plugin.uses_repository :github => "perl-plugin"
+  plugin.uses_repository :github => "melezhik/perl-plugin"
 
   # This is a required dependency for every ruby plugin.
   plugin.depends_on 'ruby-runtime', '0.10'

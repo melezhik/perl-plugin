@@ -61,12 +61,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
                 listener.info "run #{d} tests"
                 cmd = []
                 cmd << "export LC_ALL=ru_RU.UTF-8"
-                if launcher.execute("bash", "-c", 'rvm' ) == 0
-                    listener.info "found rvm configured"
-                else
-                    listener.info "rvm configured not found ... hope it's okay, will try to load it as {env['HOME']}/.rvm/scripts/rvm"
-                    cmd << "source #{env['HOME']}/.rvm/scripts/rvm"
-                end
+                cmd << "source #{env['HOME']}/.rvm/scripts/rvm"
                 cmd << "export http_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "export https_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "cd #{d}"

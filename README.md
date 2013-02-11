@@ -1,7 +1,7 @@
 perl-plugin
 ===========
 
-build, deploy and test perl based applications with jenkins CI server 
+build, deploy and test perl based applications with Jenkins CI server 
 
 prerequisites
 ===
@@ -11,15 +11,6 @@ following packages should be installed:
 - [App::cpanminus](http://search.cpan.org/perldoc?App%3A%3Acpanminus)
 - ruby installed with rvm in `single-user install mode`
 - ruby bundler
-
-environment variables taking into account:
-===
-These variables are optional, but will be taking into account when are set:
-- cpan_mirror
-- http_proxy
-- cucumber\_ruby\_version
-
-You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface.
 
 exported builders
 ===
@@ -37,7 +28,7 @@ This is the smart builder for perl based applications. Builder algorithm is:
 - if `<last_tag>` directory is held in `$WORKSPACE/svn/app/` directory:
     - creates `distributive` from `<last_tag>` directory with [Module::Build](http://search.cpan.org/perldoc?Module%3A%3ABuild) installer 
     - copies $WORKSPACE/cpanlib to distributive tarball (incremental build!)
-    - copies distributive tarball to artefacts directory ($WORKSPACE/build)
+    - copies distributive tarball to artifacts directory ($WORKSPACE/build)
 
 
 ### example layout:
@@ -58,15 +49,15 @@ This is the smart builder for perl based applications. Builder algorithm is:
 - `enable catalyst debug mode`: run catalyst tests in debug mode
 - `do not lookup last tag`: do not find last tags in `$WORKSPACE/svn/*/` directories, runs installation from `$WORKSPACE/svn/*/` directories
 - `chef json template`: [ERB](http://www.stuartellis.eu/articles/erb/) template for generated [chef json file](http://wiki.opscode.com/display/chef/Setting+the+run_list+in+JSON+during+run+time) (see further for explanation)
-- `verbosity type`: level of verbosity of output in jenkins console
+- `verbosity type`: level of verbosity of output in Jenkins console
 
 ### chef json template
 If you define one, perl_builder will generate chef json file, based on the template. Check out chef wiki to get know about chef json files. 
-The only important perl_builder do about json file is adding link to artefact URL to it.
+The only important perl_builder do about json file is adding link to artifact URL to it.
 
 ### advanced options:
 
-![patches textarea](https://raw.github.com/melezhik/perl-plugin/master/images/perl_builder_patches.png "patches textarea")
+![patches text-area](https://raw.github.com/melezhik/perl-plugin/master/images/perl_builder_patches.png "patches text-area")
 
 Patches are just stanzas in cpanminus client format, they are passed to cpanminus client as arguments. 
 The reason you may want to use patches is to forcefully install some problematic cpan modules or install downgraded versions. 
@@ -84,15 +75,15 @@ Patches examples:
 exported publishers
 ===
 
-***before add perl_publisher as post-build actions add artefacts archivator as follows !!! ***
+***before add perl_publisher as post-build actions add artifacts archivator as follows !!! ***
 
-![archived artefacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artefacts.png "archive artefacts")
+![archived artifacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artifacts.png "archive artifacts")
 
-- artefact candidates should be taken from `$WORKSPACE/build` directory
+- artifact candidates should be taken from `$WORKSPACE/build` directory
 
 ## perl_publisher
 
-This publsher should be logically run after perl_buider, it does two things:
+This publisher should be logically run after perl_builder, it does two things:
 
 - run chef-client on remote server (see deploy on remote server section)
 - run cucumber tests (see run cucumber tests section)
@@ -114,6 +105,28 @@ Cucumber tests may be optionally run, it's simple wrapper around `bundle exec cu
 
 
 ![perl_publisher_cucumber](https://raw.github.com/melezhik/perl-plugin/master/images/perl_publisher_cucumber.png "perl_publisher_cucumber interface")
+
+
+
+# Environment setup
+
+You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface to adjust plugin behavior:
+
+## cpan_mirror
+Setup one if you have custom cpan mirror, for example private mini cpan server:
+    
+    http://my.private.cpan.local
+
+## http_proxy
+Standrat way to do things when you behind http proxy server.
+
+    http://my.proxy.server
+
+## cucumber\_ruby\_version
+perl_publisher runs tests with rvm installed ruby of `default version 1.8.7`, specify another one if you have ruby installed of another version.
+
+    1.9.3
+
 
 
 

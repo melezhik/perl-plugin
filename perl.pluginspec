@@ -7,7 +7,8 @@ Jenkins::Plugin::Specification.new do |plugin|
   # You should create a wiki-page for your plugin when you publish it, see
   # https://wiki.jenkins-ci.org/display/JENKINS/Hosting+Plugins#HostingPlugins-AddingaWikipage
   # This line makes sure it's listed in your POM.
-  plugin.url = 'https://github.com/melezhik/perl-plugin'
+  # plugin.url = 'https://github.com/melezhik/perl-plugin'
+  plugin.url = 'https://wiki.jenkins-ci.org/display/JENKINS/Perl+Plugin'
 
   # The first argument is your user name for jenkins-ci.org.
   plugin.developed_by "melezhik", "Alexey Melezhik <melezhik@gmail.com>"

@@ -51,7 +51,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         # clean up old build directory
         listener.info "clean up #{workspace}/build directory"
         cmd = []
-        cmd << "export LC_ALL=ru_RU.UTF-8"
+        cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
         cmd << "rm -rf #{workspace}/build"
         cmd << "mkdir #{workspace}/build"
         cmd << "touch #{workspace}/build/.empty"
@@ -73,8 +73,8 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
                 cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
-                cmd << "export LC_ALL=ru_RU.UTF-8"
-                cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
+                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
+                cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
                 cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} #{l}"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
@@ -97,7 +97,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
                 cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
                 cmd << "export LC_ALL=ru_RU.UTF-8 && cd #{last_tag}"
-                cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
+                cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
                 cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
@@ -122,8 +122,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 module_build_verbosity = '--verbose'
             end
 
-            cmd << "export LC_ALL=ru_RU.UTF-8"
-            cmd << "eval $(perl -Mlocal::lib=/usr/local/rle) && eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
+            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
+            cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
+            cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
             cmd << "cd #{app_last_tag} && rm -rf #{workspace}/build/"
             cmd << "mkdir #{workspace}/build && rm -rf *.gz"
             cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity} && ./Build dist #{module_build_verbosity}"
@@ -139,17 +140,17 @@ class PerlBuilder < Jenkins::Tasks::Builder
             listener.info "create artifact directory: #{artifact_dir} from original directory: #{distro_dir}"
 
             cmd = []
-            cmd << "export LC_ALL=ru_RU.UTF-8"
+            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             cmd << "cd #{distro_dir} && mkdir ./cpanlib"
             cmd << "cp -r #{workspace}/cpanlib/* ./cpanlib/"
-            cmd << "mv #{distro_dir} #{artifact_dir} && echo 'artifact generated:' && tree #{artifact_dir} -L 1"
+            cmd << "mv #{distro_dir} #{artifact_dir}"
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
             # add notes files
             if File.exists? "#{workspace}/notes.markdown" 
                 listener.info "add to artifacts notes.markdown"
                 cmd = []
-                cmd << "export LC_ALL=ru_RU.UTF-8"
+                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "cp #{workspace}/notes.markdown #{artifact_dir}/"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end

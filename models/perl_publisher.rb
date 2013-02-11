@@ -40,7 +40,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
             listener.info "chef_json uri: #{chef_json_uri}"
 
             cmd = []
-            cmd << "export LC_ALL=ru_RU.UTF-8"
+            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             config_path = ''
             config_path = " -c #{@chef_client_config}" unless (@chef_client_config.nil? ||  @chef_client_config.empty?)
             cmd << "ssh #{@ssh_login}@#{@ssh_host} sudo chef-client -j #{chef_json_uri} #{config_path}"
@@ -62,7 +62,7 @@ class PerlPublisher < Jenkins::Tasks::Publisher
             Dir.glob("#{workspace}/cucumber/*").select {|f| File.directory? f}.each do |d|
                 listener.info "run #{d} tests"
                 cmd = []
-                cmd << "export LC_ALL=ru_RU.UTF-8"
+                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "source #{env['HOME']}/.rvm/scripts/rvm"
                 cmd << "export http_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)
                 cmd << "export https_proxy=#{env['http_proxy']}" unless (env['http_proxy'].nil? ||  env['http_proxy'].empty?)

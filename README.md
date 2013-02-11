@@ -100,6 +100,7 @@ Cucumber tests may be optionally run, it's simple wrapper around `bundle exec cu
     $WORKSPACE/cucumber/test-suite-one/
     $WORKSPACE/cucumber/test-suite-two/
     $WORKSPACE/cucumber/test-suite-three/
+    # etc
 
 - perl_publisher run `bundle exec cucumber` command from every subdirectory in `$WORKSPACE/cucumber/`
 
@@ -110,15 +111,15 @@ Cucumber tests may be optionally run, it's simple wrapper around `bundle exec cu
 
 # Environment setup
 
-You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface to adjust plugin behavior:
+You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface to adjust plugin behavior.
 
 ## cpan_mirror
-Setup one if you have custom cpan mirror, for example private mini cpan server:
+Setup one if you have custom cpan mirror, for example private mini cpan server.
     
     http://my.private.cpan.local
 
 ## http_proxy
-Standrat way to do things when you behind http proxy server.
+Standard way to do things when you behind http proxy server.
 
     http://my.proxy.server
 
@@ -126,6 +127,11 @@ Standrat way to do things when you behind http proxy server.
 perl_publisher runs tests with rvm installed ruby of `default version 1.8.7`, specify another one if you have ruby installed of another version.
 
     1.9.3
+
+## LC_ALL
+Setup your standart encoding
+
+    ru_RU.UTF-8
 
 
 

@@ -155,6 +155,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end
 
+            # patches file
+            File.open("#{artifact_dir}/patches.txt", 'w') {|f| f.write(@patches) }
+
             # add chef json file
             listener.info "generate chef json file"
             renderer = ERB.new(@chef_json_template)

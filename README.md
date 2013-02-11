@@ -29,6 +29,7 @@ This is the smart builder for perl based applications. Builder algorithm is:
     - creates `distributive` from `<last_tag>` directory with [Module::Build](http://search.cpan.org/perldoc?Module%3A%3ABuild) installer 
     - copies $WORKSPACE/cpanlib to distributive tarball (incremental build!)
     - copies distributive tarball to artifacts directory ($WORKSPACE/build)
+    - copies notes.markdown file and patches text-area content to ($WORKSPACE/build)
 
 
 ### example layout:
@@ -129,7 +130,7 @@ perl_publisher runs tests with rvm installed ruby of `default version 1.8.7`, sp
     1.9.3
 
 ## LC_ALL
-Setup your standart encoding
+Setup your standard encoding.
 
     ru_RU.UTF-8
 

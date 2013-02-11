@@ -151,12 +151,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 listener.info "add to artifacts notes.markdown"
                 cmd = []
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
-                cmd << "cp #{workspace}/notes.markdown #{artifact_dir}/"
+                cmd << "cp #{workspace}/notes.markdown #{workspace}/build/"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end
 
             # patches file
-            File.open("#{artifact_dir}/patches.txt", 'w') {|f| f.write(@patches) }
+            File.open("#{workspace}/build/patches.txt", 'w') {|f| f.write(@patches) }
 
             # add chef json file
             listener.info "generate chef json file"

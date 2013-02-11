@@ -78,7 +78,7 @@ exported publishers
 
 ***before add perl_publisher as post-build actions add artifacts archivator as follows !!! ***
 
-![archived artifacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artifacts.png "archive artifacts")
+![archived artifacts ](https://raw.github.com/melezhik/perl-plugin/master/images/archive_artefacts.png "archived artifacts")
 
 - artifact candidates should be taken from `$WORKSPACE/build` directory
 

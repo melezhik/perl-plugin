@@ -124,7 +124,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
-            cmd << "eval $(perl -Mlocal::lib=/usr/local/rle)"
+            cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
             cmd << "cd #{app_last_tag} && rm -rf #{workspace}/build/"
             cmd << "mkdir #{workspace}/build && rm -rf *.gz"
             cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity} && ./Build dist #{module_build_verbosity}"

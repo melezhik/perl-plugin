@@ -1,3 +1,9 @@
+# version 0.0.4
+- split plugin on 3 parts: 
+ - perl-plugin
+ - chef-plugin
+ - cucumber-plugin
+
 # version 0.0.3
 - bugfix for ./Build dist 
 

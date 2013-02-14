@@ -14,7 +14,7 @@ f.block do
         verbosity_type = perl_builder.get('verbosity_type')
     end 
 
-    f.entry(:title => 'run build process', :field => 'run_build', :description => "run build process") do
+    f.entry(:title => 'enabled', :field => 'enabled', :description => "enable/disable this action") do
       f.checkbox
     end
 
@@ -22,11 +22,11 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'do not lookup last tag', :field => 'skip_last_tag', :description => "build from project's source dir, not last tag one") do
+    f.entry(:title => 'do not lookup last tag', :field => 'skip_last_tag', :description => "build from project's source directory, not from last tag one") do
       f.checkbox
     end
 
-    f.entry(:title => 'chef json template', :field => 'chef_json_template', :description => "use ERB syntax; %src% will be replaced by url to artifact") do
+    f.entry(:title => 'chef json template', :field => 'chef_json_template', :description => "use ERB syntax; %src% will be replaced by url to archived artifact") do
       f.textarea
     end
 
@@ -53,7 +53,7 @@ f.block do
     end
 
     f.advanced do    
-        f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. check out https://github.com/melezhik/perl-plugin#advanced-options for details") do
+        f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. see https://github.com/melezhik/perl-plugin#advanced-options for details") do
           f.textarea
         end
     end

@@ -14,5 +14,5 @@ PLATFORMS
   java
 
 DEPENDENCIES
-  jenkins-plugin-runtime (~> 0.2.3)
+  jenkins-plugin-runtime
   versionomy

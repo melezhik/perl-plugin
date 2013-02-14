@@ -4,7 +4,7 @@ require 'erb'
     
 class PerlBuilder < Jenkins::Tasks::Builder
 
-    attr_accessor :attrs, :run_build, :verbosity_type, :catalyst_debug, :skip_last_tag, :patches, :chef_json_template
+    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :skip_last_tag, :patches, :chef_json_template
 
     display_name "Build perl project" 
 
@@ -12,7 +12,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
     # is created from a configuration screen.
     def initialize(attrs = {})
         @attrs = attrs
-        @run_build = attrs["run_build"]
+        @enabled = attrs["enabled"]
         @verbosity_type = attrs["verbosity_type"]
         @catalyst_debug = attrs["catalyst_debug"]
         @skip_last_tag = attrs["skip_last_tag"]
@@ -43,7 +43,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         env = build.native.getEnvironment()
         listener.info("plugin input parameters: #{@attrs}")
         listener.info("verbosity_type: #{@verbosity_type}")
-        listener.info("run_build: #{@run_build}")
+        listener.info("enabled: #{@enabled}")
         workspace = build.send(:native).workspace.to_s
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
@@ -58,7 +58,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
         # start build
-        if @run_build == true 
+        if @enabled == true 
             # setup verbosity  
             if @verbosity_type == 'high'
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=1") }
@@ -174,7 +174,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             File.open("#{workspace}/build/chef.json", 'w') {|f| f.write(json_str) }
 
-        end # if @run_build == true
+        end # if @enabled == true
 
     end
 

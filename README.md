@@ -47,7 +47,6 @@ This is the smart builder for perl based applications. Builder algorithm is:
 - `run build process`: enable/disable builder
 - `enable catalyst debug mode`: run catalyst tests in debug mode
 - `do not lookup last tag`: do not find last tags in `$WORKSPACE/svn/*/` directories, runs installation from `$WORKSPACE/svn/*/` directories
-- `chef json template`: [ERB](http://www.stuartellis.eu/articles/erb/) template for generated [chef json file](http://wiki.opscode.com/display/chef/Setting+the+run_list+in+JSON+during+run+time) (see further for explanation)
 - `verbosity type`: level of verbosity of output in Jenkins console
 
 ### advanced options:
@@ -65,7 +64,6 @@ Patches examples:
     -f Math::Currency # forcefully installation
     --skip-satisfied CGI DBI~1.2
     http://search.cpan.org/CPAN/authors/id/D/DO/DOY/Moose-2.0604.tar.gz
-
 
 # Environment setup
 

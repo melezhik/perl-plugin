@@ -1,10 +1,10 @@
 require "versionomy"
-require 'erb'
+
 ###
     
 class PerlBuilder < Jenkins::Tasks::Builder
 
-    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :skip_last_tag, :patches, :chef_json_template
+    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :skip_last_tag, :patches
 
     display_name "Build perl project" 
 
@@ -17,7 +17,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
         @catalyst_debug = attrs["catalyst_debug"]
         @skip_last_tag = attrs["skip_last_tag"]
         @patches = attrs["patches"] || ""
-        @chef_json_template = attrs["chef_json_template"]
     end
     def default_cpan_mirror
         "http://cpan.dk"
@@ -158,21 +157,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
             # patches file
             File.open("#{workspace}/build/patches.txt", 'w') {|f| f.write(@patches) }
 
-            # add chef json file
-            listener.info "generate chef json file"
-            renderer = ERB.new(@chef_json_template)
-            json_str = renderer.result
-
-            job = build.send(:native).get_project.name
-
-            src_link = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{File.basename(artifact_dir)}/*zip*/#{File.basename(artifact_dir)}.zip"
-            listener.info "generated src link: #{src_link}"
-    
-            json_str.sub! '%src%', src_link
-            json_str.sub! '"{','{'
-            json_str.sub! '}"','}'
-
-            File.open("#{workspace}/build/chef.json", 'w') {|f| f.write(json_str) }
 
         end # if @enabled == true
 

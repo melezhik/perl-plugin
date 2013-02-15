@@ -50,10 +50,6 @@ This is the smart builder for perl based applications. Builder algorithm is:
 - `chef json template`: [ERB](http://www.stuartellis.eu/articles/erb/) template for generated [chef json file](http://wiki.opscode.com/display/chef/Setting+the+run_list+in+JSON+during+run+time) (see further for explanation)
 - `verbosity type`: level of verbosity of output in Jenkins console
 
-### chef json template
-If you define one, perl_builder will generate chef json file, based on the template. Check out chef wiki to get know about chef json files. 
-The only important perl_builder do about json file is adding link to artifact URL to it.
-
 ### advanced options:
 
 ![patches text-area](https://raw.github.com/melezhik/perl-plugin/master/images/patches.png "patches text-area")

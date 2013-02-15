@@ -145,6 +145,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
             cmd << "mv #{distro_dir} #{artifact_dir}"
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
+            # basename of distributive will be strored as distibutive_url file
+            File.open("#{workspace}/build/distibutive_url.txt", 'w') {|f| f.write(File.basename(artifact_dir)) }
+
             # add notes files
             if File.exists? "#{workspace}/notes.markdown" 
                 listener.info "add to artifacts notes.markdown"

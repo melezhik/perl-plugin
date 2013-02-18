@@ -39,11 +39,15 @@ class PerlBuilder < Jenkins::Tasks::Builder
     def perform(build, launcher, listener)
 
       # actually perform the build step
+
         env = build.native.getEnvironment()
+        workspace = build.send(:native).workspace.to_s
+        build_number = build.send(:native).get_number
+        job = build.send(:native).get_project.name
+
         listener.info("plugin input parameters: #{@attrs}")
         listener.info("verbosity_type: #{@verbosity_type}")
         listener.info("enabled: #{@enabled}")
-        workspace = build.send(:native).workspace.to_s
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 
@@ -124,29 +128,26 @@ class PerlBuilder < Jenkins::Tasks::Builder
             cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
             cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-            cmd << "cd #{app_last_tag} && rm -rf #{workspace}/build/"
-            cmd << "mkdir #{workspace}/build && rm -rf *.gz"
-            cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity} && ./Build dist #{module_build_verbosity}"
-            cmd << "mv *.gz #{workspace}/build/ && cd #{workspace}/build"
-            cmd << "tar -xzf *.gz --verbose && rm -rf *.gz"
+            cmd << "cd #{app_last_tag}"
+            cmd << "rm -rf ./cpanlib"
+            cmd << "cp -r #{workspace}/cpanlib/ ."
+            cmd << "rm -rf *.gz"
+            cmd << "rm -rf MANIFEST"
+            cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
+            cmd << "./Build dist #{module_build_verbosity}"
+            cmd << "rm -rf #{workspace}/build/"
+            cmd << "mkdir #{workspace}/build"
+            cmd << "mv *.gz #{workspace}/build/"
+            cmd << "rm -rf *.gz"
+            cmd << "rm -rf ./cpanlib"
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
+            distroname = File.basename(Dir.glob("#{workspace}/build/*.tar.gz").last)
 
-            distro_dir = Dir.glob("#{workspace}/build/*").select {|f2| File.directory? f2}.last.sub(/\/$/){""}
-            build_number = build.send(:native).get_number
-            artifact_dir = "#{distro_dir}-b#{build_number}"
-
-            listener.info "create artifact directory: #{artifact_dir} from original directory: #{distro_dir}"
-
-            cmd = []
-            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
-            cmd << "cd #{distro_dir} && mkdir ./cpanlib"
-            cmd << "cp -r #{workspace}/cpanlib/* ./cpanlib/"
-            cmd << "mv #{distro_dir} #{artifact_dir}"
-            build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
-
-            # basename of distributive will be strored as distibutive_url file
-            File.open("#{workspace}/build/distibutive_url.txt", 'w') {|f| f.write(File.basename(artifact_dir)) }
+            # basename of distributive will be added to artifatcs
+            distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{distroname}"
+            File.open("#{workspace}/build/disro.url", 'w') { |f| f.write(distro_url) }
+            listener.info "distro.url: #{distro_url}"
 
             # add notes files
             if File.exists? "#{workspace}/notes.markdown" 

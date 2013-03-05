@@ -22,9 +22,23 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'do not lookup last tag', :field => 'skip_last_tag', :description => "build from project's source directory, not from last tag one") do
+    f.entry(:title => 'lookup last tag', :field => 'look_last_tag', :description => "find last tag directory") do
       f.checkbox
     end
+
+    f.entry(:title => 'make dist', :field => 'make_dist', :description => "build distributive") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'color output', :field => 'color_output', :description => "enable/disable color output") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'source dir', :field => 'source_dir', :description => "set up source directory") do
+      f.textbox
+    end
+
+
 
     #f.entry(:title => 'it.class', :field => 'foo0', :description => "it.class") do
     #  f.textarea(:value=>it.class)

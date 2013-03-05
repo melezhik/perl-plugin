@@ -1,10 +1,12 @@
 require "versionomy"
+require 'term/ansicolor'
 
 ###
     
 class PerlBuilder < Jenkins::Tasks::Builder
+    include Term::ANSIColor
 
-    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :skip_last_tag, :patches
+    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :look_last_tag, :patches, :make_dist, :source_dir, :color_output
 
     display_name "Build perl project" 
 
@@ -15,8 +17,11 @@ class PerlBuilder < Jenkins::Tasks::Builder
         @enabled = attrs["enabled"]
         @verbosity_type = attrs["verbosity_type"]
         @catalyst_debug = attrs["catalyst_debug"]
-        @skip_last_tag = attrs["skip_last_tag"]
+        @look_last_tag = attrs["look_last_tag"]
         @patches = attrs["patches"] || ""
+        @make_dist = attrs["make_dist"]
+        @source_dir = attrs["source_dir"]
+        @color_output = attrs["color_output"]
     end
     def default_cpan_mirror
         "http://cpan.dk"
@@ -44,6 +49,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
         workspace = build.send(:native).workspace.to_s
         build_number = build.send(:native).get_number
         job = build.send(:native).get_project.name
+        source_dir = nil
+        if @source_dir.nil? || @source_dir.empty?
+            source_dir = workspace
+        else
+            source_dir = "#{workspace}/#@source_dir"
+        end
 
         listener.info("plugin input parameters: #{@attrs}")
         listener.info("verbosity_type: #{@verbosity_type}")
@@ -71,7 +82,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info "apply patch: #{l}"
+                listener.info green("apply patch: #{l}")
                 cmd = []
                 cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -83,72 +94,71 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end  
 
-            Dir.glob("#{workspace}/svn/*").select {|f| File.directory? f}.each do |d|
-
-                if @skip_last_tag == true then            
-                    last_tag = d
-                else
-                    last_tag = Dir.glob("#{d}/*").select {|f2| File.directory? f2}.sort { |x,y| 
-                        Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
-                    }.last
-                end
-
-                listener.info "building last tag: #{last_tag}"
-                cmd = []
-                cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
-                
-                cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
-                cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
-                cmd << "export LC_ALL=ru_RU.UTF-8 && cd #{last_tag}"
-                cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
-                cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-                cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
-                build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
-            end  
-
-            if @skip_last_tag == true then
-                app_last_tag  = "#{workspace}/svn/app/"            
+            if @look_last_tag == false             
+                last_tag = source_dir
             else
-                app_last_tag = Dir.glob("#{workspace}/svn/app/*").select {|f2| File.directory? f2}.sort { |x,y|
+                last_tag = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y| 
                     Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
                 }.last
             end
 
-            listener.info "creating distributive from last tag: #{app_last_tag}"
+            listener.info @color_output == true ? green("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
             cmd = []
-            module_build_verbosity = ''
-            if @verbosity_type == 'none' then
-                module_build_verbosity = '--quiet'
-            elsif @verbosity_type == 'medium' then
-                module_build_verbosity = ''
-            elsif @verbosity_type == 'High'
-                module_build_verbosity = '--verbose'
-            end
-
-            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
+            cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
+            
+            cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
+            cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
+            cmd << "export LC_ALL=ru_RU.UTF-8 && cd #{last_tag}"
             cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
             cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-            cmd << "cd #{app_last_tag}"
-            cmd << "rm -rf ./cpanlib"
-            cmd << "cp -r #{workspace}/cpanlib/ ."
-            cmd << "rm -rf *.gz"
-            cmd << "rm -rf MANIFEST"
-            cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
-            cmd << "./Build dist #{module_build_verbosity}"
-            cmd << "rm -rf #{workspace}/build/"
-            cmd << "mkdir #{workspace}/build"
-            cmd << "mv *.gz #{workspace}/build/"
-            cmd << "rm -rf *.gz"
-            cmd << "rm -rf ./cpanlib"
+            cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
-            distroname = File.basename(Dir.glob("#{workspace}/build/*.tar.gz").last)
+            if @make_dist == true
 
-            # basename of distributive will be added to artifatcs
-            distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{distroname}"
-            File.open("#{workspace}/build/disro.url", 'w') { |f| f.write(distro_url) }
-            listener.info "distro.url: #{distro_url}"
+                if @look_last_tag == false 
+                    app_last_tag  = source_dir            
+                else
+                    app_last_tag = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y|
+                        Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
+                    }.last
+                end
 
+                listener.info @color_output == true ? green("creating distributive from last tag: #{app_last_tag}") : "creating distributive from last tag: #{app_last_tag}"
+                cmd = []
+                module_build_verbosity = ''
+                if @verbosity_type == 'none' 
+                    module_build_verbosity = '--quiet'
+                elsif @verbosity_type == 'medium' 
+                    module_build_verbosity = ''
+                elsif @verbosity_type == 'High'
+                    module_build_verbosity = '--verbose'
+                end
+
+                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
+                cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
+                cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
+                cmd << "cd #{app_last_tag}"
+                cmd << "rm -rf ./cpanlib"
+                cmd << "cp -r #{workspace}/cpanlib/ ."
+                cmd << "rm -rf *.gz"
+                cmd << "rm -rf MANIFEST"
+                cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
+                cmd << "./Build dist #{module_build_verbosity}"
+                cmd << "rm -rf #{workspace}/build/"
+                cmd << "mkdir #{workspace}/build"
+                cmd << "mv *.gz #{workspace}/build/"
+                cmd << "rm -rf *.gz"
+                cmd << "rm -rf ./cpanlib"
+                build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
+
+                distroname = File.basename(Dir.glob("#{workspace}/build/*.tar.gz").last)
+
+                # basename of distributive will be added to artifatcs
+                distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{distroname}"
+                File.open("#{workspace}/build/disro.url", 'w') { |f| f.write(distro_url) }
+                listener.info "distro.url: #{distro_url}"
+            end
             # add notes files
             if File.exists? "#{workspace}/notes.markdown" 
                 listener.info "add to artifacts notes.markdown"

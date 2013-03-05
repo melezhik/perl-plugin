@@ -6,7 +6,7 @@ require 'term/ansicolor'
 class PerlBuilder < Jenkins::Tasks::Builder
     include Term::ANSIColor
 
-    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :look_last_tag, :patches, :make_dist, :source_dir, :color_output
+    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :lookup_last_tag, :patches, :make_dist, :source_dir, :color_output
 
     display_name "Build perl project" 
 
@@ -17,7 +17,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         @enabled = attrs["enabled"]
         @verbosity_type = attrs["verbosity_type"]
         @catalyst_debug = attrs["catalyst_debug"]
-        @look_last_tag = attrs["look_last_tag"]
+        @lookup_last_tag = attrs["lookup_last_tag"]
         @patches = attrs["patches"] || ""
         @make_dist = attrs["make_dist"]
         @source_dir = attrs["source_dir"]
@@ -82,7 +82,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info green("apply patch: #{l}")
+                listener.info (@color_output == true) ? green("apply patch: #{l}") : "apply patch: #{l}"
                 cmd = []
                 cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -94,7 +94,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
             end  
 
-            if @look_last_tag == false             
+            if @lookup_last_tag == false             
                 last_tag = source_dir
             else
                 last_tag = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y| 
@@ -102,7 +102,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 }.last
             end
 
-            listener.info @color_output == true ? green("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
+            listener.info (@color_output == true) ? green("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
             cmd = []
             cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
             
@@ -116,7 +116,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             if @make_dist == true
 
-                if @look_last_tag == false 
+                if @lookup_last_tag == false 
                     app_last_tag  = source_dir            
                 else
                     app_last_tag = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y|

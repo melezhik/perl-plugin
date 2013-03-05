@@ -82,7 +82,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info (@color_output == true) ? green("apply patch: #{l}") : "apply patch: #{l}"
+                listener.info (@color_output == true) ? blue("apply patch: #{l}") : "apply patch: #{l}"
                 cmd = []
                 cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -102,7 +102,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 }.last
             end
 
-            listener.info (@color_output == true) ? green("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
+            listener.info (@color_output == true) ? blue("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
             cmd = []
             cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
             
@@ -124,7 +124,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     }.last
                 end
 
-                listener.info @color_output == true ? green("creating distributive from last tag: #{app_last_tag}") : "creating distributive from last tag: #{app_last_tag}"
+                listener.info (@color_output == true) ? blue("creating distributive from last tag: #{app_last_tag}") : "creating distributive from last tag: #{app_last_tag}"
                 cmd = []
                 module_build_verbosity = ''
                 if @verbosity_type == 'none' 

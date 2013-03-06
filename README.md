@@ -36,7 +36,6 @@ following packages should be installed:
 - `source directrory`: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )
 - `lookup last tag`: whether to look up tag with maximum version in `source directory`
 - `create distributive`: where to create cpan distributive ( will be stored in `distributive` directory)
-- `verbosity type`: level of verbosity
 - `enable catalyst debug mode`: run catalyst tests in debug mode
 
 # advanced options:

@@ -4,38 +4,34 @@ f = taglib("/lib/form")
 
 f.block do
 
-    perl_builder = it.getBuilders.select {|b| b.get('class').to_s == 'PerlBuilder' }.first
-    if perl_builder.nil? # first time usage of plugin in project
-        verbosity_type = 'none'
-        f.readOnlyTextbox(:value => 'welcome to the PerlBuilder, I see you use the plugin in the project for the first time')
-    else
-        verbosity_type = perl_builder.get('verbosity_type')
-    end 
-
     f.entry(:title => 'enabled', :field => 'enabled', :description => "enable/disable this action") do
       f.checkbox
     end
 
-    f.entry(:title => 'enable catalyst debug mode', :field => 'catalyst_debug', :description => "run catalyst tests in debug mode") do
-      f.checkbox
-    end
-
-    f.entry(:title => 'lookup last tag', :field => 'lookup_last_tag', :description => "find last tag directory") do
-      f.checkbox
-    end
-
-    f.entry(:title => 'create distributive', :field => 'make_dist', :description => "build distributive") do
-      f.checkbox
-    end
-
-    f.entry(:title => 'source directrory', :field => 'source_dir', :description => "set up source directory") do
+    f.entry(:title => 'source directrory', :field => 'source_dir', :description => "path to directory with source code, where build runs") do
       f.textbox
     end
+
+    f.entry(:title => 'lookup last tag', :field => 'lookup_last_tag', :description => "whether to look up tag with maximum version") do
+      f.checkbox
+    end
+
+    f.entry(:title => 'distributive directory', :field => 'dist_dir', :description => "path to directory where to store distributive") do
+      f.textbox
+    end
+
+    f.entry(:title => 'create distributive', :field => 'make_dist', :description => "where to make cpan distrubitive from source directory") do
+      f.checkbox
+    end
+
     f.advanced do    
         f.entry(:title => 'color output', :field => 'color_output', :description => "enable/disable color output") do
           f.checkbox
         end
         f.entry(:title => 'verbose output', :field => 'verbose_output', :description => "enable/disable verbose output") do
+          f.checkbox
+        end
+        f.entry(:title => 'enable catalyst debug mode', :field => 'catalyst_debug', :description => "run catalyst tests in debug mode") do
           f.checkbox
         end
         f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. see https://github.com/melezhik/perl-plugin#advanced-options for details") do

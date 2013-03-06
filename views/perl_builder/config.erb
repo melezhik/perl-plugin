@@ -4,8 +4,6 @@ f = taglib("/lib/form")
 
 f.block do
 
-    #it.getBuilders.each {|b| f.readOnlyTextbox(:value => b.get('class').class) }
-                                                                 
     perl_builder = it.getBuilders.select {|b| b.get('class').to_s == 'PerlBuilder' }.first
     if perl_builder.nil? # first time usage of plugin in project
         verbosity_type = 'none'
@@ -26,7 +24,7 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'make dist', :field => 'make_dist', :description => "build distributive") do
+    f.entry(:title => 'create distributive', :field => 'make_dist', :description => "build distributive") do
       f.checkbox
     end
 
@@ -34,27 +32,9 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'source dir', :field => 'source_dir', :description => "set up source directory") do
+    f.entry(:title => 'source directrory', :field => 'source_dir', :description => "set up source directory") do
       f.textbox
     end
-
-
-
-    #f.entry(:title => 'it.class', :field => 'foo0', :description => "it.class") do
-    #  f.textarea(:value=>it.class)
-    #end
-
-    #f.entry(:title => 'it.public_methods', :field => 'foo00', :description => "it.public_methods") do
-    #  f.textarea(:value=>it.public_methods.sort.join("\n"))
-    #end
-
-    #f.entry(:title => 'getBuilders.first.public_methods', :field => 'foo2', :description => "getBuilders.first.public_methods") do
-    #  f.textarea(:value=>it.getBuilders.first.public_methods.sort.join("\n"))
-    #end
-
-    #f.entry(:title => 'it.getBuilders.first.get("class")', :field => 'foo6', :description => "it.getBuilders.first.get('class')") do
-    #  f.textarea(:value=>it.getBuilders.first.get('class'))
-    #end
 
     f.entry(:title => 'verbosity type', :field => 'verbosity_type', :description => "type of verbosity") do
         f.radio(:name => 'verbosity_type', :value=>'none', :checked => verbosity_type == 'none' ? true : false, :title => 'None' )

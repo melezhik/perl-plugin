@@ -10,20 +10,22 @@ following packages should be installed:
 
 # exported builders
 
-## perl_builder
+`Build perl project`
 
-Builds and optionally create distributive of perl application
+- Builds and optionally create distributive for perl application
 
 ## parameters:
 
 ![layout](https://raw.github.com/melezhik/perl-plugin/master/images/layout.png "layout")
 
-- `run build process`: enable/disable builder
+- `run build process`: enable/disable build step
+- `source directrory`: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )
+- `lookup last tag`: whether to look up tag with maximum version in `source directory`
+- `create distributive`: where to create cpan distributive ( will be stored in `distributive` directory)
+- `verbosity type`: level of verbosity
 - `enable catalyst debug mode`: run catalyst tests in debug mode
-- `lookup last tag`: do not find last tags in `$WORKSPACE/svn/*/` directories, runs installation from `$WORKSPACE/svn/*/` directories
-- `verbosity type`: level of verbosity of output in Jenkins console
 
-### advanced options:
+# advanced options:
 
 ![patches text-area](https://raw.github.com/melezhik/perl-plugin/master/images/patches.png "patches text-area")
 
@@ -41,7 +43,7 @@ Patches examples:
 
 # Environment setup
 
-You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface to adjust plugin behavior.
+You can set environment variables via "Jenkins/Configuration/Global properties/Environment variables" interface to adjust plugin behaviour.
 
 ## cpan_mirror
 Setup one if you have custom cpan mirror, for example private mini cpan server.
@@ -57,7 +59,6 @@ Standard way to do things when you behind http proxy server.
 Setup your standard encoding.
 
     ru_RU.UTF-8
-
 
 
 

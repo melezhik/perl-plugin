@@ -7,6 +7,8 @@ build perl applications under Jenkins CI server
 following packages should be installed:
 
 - [App::cpanminus](http://search.cpan.org/perldoc?App%3A%3Acpanminus)
+- [local::lib](http://search.cpan.org/perldoc?local%3A%3Alib)
+
 
 # exported builders
 

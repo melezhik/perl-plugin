@@ -41,6 +41,16 @@ class PerlBuilder < Jenkins::Tasks::Builder
     # @param [Jenkins::Model::Build] build on which to run this step
     # @param [Jenkins::Launcher] launcher the launcher that can run code on the node running this build
     # @param [Jenkins::Model::Listener] listener the listener for this build.
+    def search_last_tag(directory)
+            source_directory = Dir.glob("#{directory}/*").select {|f2| File.directory? f2}.sort { |x,y| 
+                Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
+            }.last
+        rescue Versionomy::Errors::ParseError => ex
+            raise ex, bold(red("Some folders name does not contain version number."))
+        rescue Exception => ex
+            raise ex
+    end
+
     def perform(build, launcher, listener)
         raise ArgumentError, bold(red("dist dir is required parameter")) if @dist_dir.nil? || @dist_dir.empty?
 
@@ -65,7 +75,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         cmd = []
         cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
         cmd << "rm -rf #{workspace}/#{@dist_dir}"
-        cmd << "mkdir #{workspace}/#{@dist_dir}"
+        cmd << "mkdir -p #{workspace}/#{@dist_dir}"
         cmd << "touch #{workspace}/#{@dist_dir}/.empty"
         build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
@@ -96,15 +106,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             if @lookup_last_tag == false             
                 s_dir = source_dir
             else
-                begin
-                    s_dir = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y| 
-                        Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
-                    }.last
-                rescue Versionomy::Errors::ParseError => ex
-                    raise ex, bold(red("Some folders name does not contain version number."))
-                rescue Exception => ex
-                    raise ex
-                end
+                s_dir = search_last_tag(source_dir)
             end
 
             listener.info (@color_output == true) ? "#{black(red(bold("building from source:")))} #{bold(black(blue("#{s_dir}")))}" : "building from source: #{s_dir}"
@@ -125,15 +127,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 if @lookup_last_tag == false 
                     app_s_dir  = source_dir            
                 else
-                    begin
-                        app_s_dir = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y|
-                            Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
-                        }.last
-                    rescue Versionomy::Errors::ParseError => ex
-                        raise ex, bold(red("Some folders name does not contain version number."))
-                    rescue Exception => ex
-                        raise ex
-                    end
+                    app_s_dir = search_last_tag(source_dir)
                 end
 
                 listener.info (@color_output == true) ? "#{black(red(bold("creating distributive from:")))}  #{bold(black(blue("#{app_s_dir}")))}" : "creating distributive from: #{app_s_dir}"
@@ -156,7 +150,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
                 cmd << "./Build dist #{module_build_verbosity}"
                 cmd << "rm -rf #{workspace}/#{@dist_dir}/"
-                cmd << "mkdir #{workspace}/#{@dist_dir}"
+                cmd << "mkdir -p #{workspace}/#{@dist_dir}"
                 cmd << "mv *.gz #{workspace}/#{@dist_dir}/"
                 cmd << "rm -rf *.gz"
                 cmd << "rm -rf ./cpanlib"

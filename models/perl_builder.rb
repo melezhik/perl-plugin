@@ -101,12 +101,14 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     s_dir = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y| 
                         Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
                     }.last
-                rescue Exception
-                    raise bold(red("Could not parse folder. Folders in directory must be folder-0.0.0, not \'folder\' or something else."))
+                rescue Versionomy::Errors::ParseError => ex
+                    raise ex, bold(red("Some folders name does not contain version number."))
+                rescue Exception => ex
+                    raise ex
                 end
             end
 
-            listener.info (@color_output == true) ? "#{black(red(bold("building source from:")))} #{bold(black(blue("#{s_dir}")))}" : "building source from: #{s_dir}"
+            listener.info (@color_output == true) ? "#{black(red(bold("building from source:")))} #{bold(black(blue("#{s_dir}")))}" : "building from source: #{s_dir}"
             cmd = []
             cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
             
@@ -128,8 +130,10 @@ class PerlBuilder < Jenkins::Tasks::Builder
                         app_s_dir = Dir.glob("#{source_dir}/*").select {|f2| File.directory? f2}.sort { |x,y|
                             Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
                         }.last
-                    rescue
-                        raise bold(red("Could not parse folder. Folders in directory must be folder-0.0.0, not \'folder\' or something else."))
+                    rescue Versionomy::Errors::ParseError => ex
+                        raise ex, bold(red("Some folders name does not contain version number."))
+                    rescue Exception => ex
+                        raise ex
                     end
                 end
 

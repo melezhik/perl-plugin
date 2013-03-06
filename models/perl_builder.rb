@@ -42,7 +42,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
     # @param [Jenkins::Launcher] launcher the launcher that can run code on the node running this build
     # @param [Jenkins::Model::Listener] listener the listener for this build.
     def perform(build, launcher, listener)
-        raise ArgumentError, bold(red("dist dir not be empy")) if @dist_dir.nil? || @dist_dir.empty?
+        raise ArgumentError, bold(red("dist dir is required parameter")) if @dist_dir.nil? || @dist_dir.empty?
 
       # actually perform the build step
         env = build.native.getEnvironment()

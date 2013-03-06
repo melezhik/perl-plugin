@@ -1,3 +1,84 @@
-<img src = "https://raw.github.com/melezhik/perl-plugin/master/images/help.png"/>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC
+    "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
+    "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' xmlns:svg='http://www.w3.org/2000/svg'>
+<head><meta content='application/xhtml+xml;charset=utf-8' http-equiv='Content-type' /><title></title></head>
+<body>
+<h1 id='perlplugin'>perl-plugin</h1>
 
+<p>build perl applications under Jenkins CI server</p>
 
+<h1 id='prerequisites'>prerequisites</h1>
+
+<p>following packages should be installed:</p>
+
+<ul>
+<li><a href='http://search.cpan.org/perldoc?App%3A%3Acpanminus'>App::cpanminus</a></li>
+</ul>
+
+<h1 id='exported_builders'>exported builders</h1>
+
+<p><code>Build perl project</code></p>
+
+<ul>
+<li>Builds and optionally create distributive for perl application</li>
+
+<li>Build process consists of these steps: - cwd to <code>source directory</code> directory - if <code>lookup last tag</code> is set find &#8216;tagged&#8217; directory with maximum version number and cwd to it - setup local::lib to workspace/cpanlib directory - runs &#8220;cpanmini -i .&#8221; to install everithing into workspace/cpanlib directory</li>
+
+<li>Make distrubitive process consists of these steps: - cwd to <code>source directory</code> directory - copy workspace/cpanlib into current working directory - runs &#8220;perl Build.PL &amp;&amp; ./Build manifest &amp;&amp; ./Build dist&#8221; to create cpan distributive - copies cpan distributive to workspace/<code>distributive</code> directory - doing some cleanup</li>
+</ul>
+
+<h2 id='parameters'>parameters:</h2>
+
+<p><img src='https://raw.github.com/melezhik/perl-plugin/master/images/layout.png' alt='layout' /></p>
+
+<ul>
+<li><code>run build process</code>: enable/disable build step</li>
+
+<li><code>source directrory</code>: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )</li>
+
+<li><code>lookup last tag</code>: whether to look up tag with maximum version in <code>source directory</code></li>
+
+<li><code>create distributive</code>: where to create cpan distributive ( will be stored in <code>distributive</code> directory)</li>
+
+<li><code>verbosity type</code>: level of verbosity</li>
+
+<li><code>enable catalyst debug mode</code>: run catalyst tests in debug mode</li>
+</ul>
+
+<h1 id='advanced_options'>advanced options:</h1>
+
+<p><img src='https://raw.github.com/melezhik/perl-plugin/master/images/patches.png' alt='patches text-area' /></p>
+
+<p>Patches are just stanzas in cpanminus client format, they are passed to cpanminus client as arguments. The reason you may want to use patches is to forcefully install some problematic cpan modules or install downgraded versions. Patches are the right way to do this. Once patches are applied you may comment them or prepend with <code>--skip-satisfied</code> flag. Check out http://search.cpan.org/perldoc?cpanm for details.</p>
+
+<p>Patches examples:</p>
+
+<pre><code># any comments start with &#39;#&#39;
+-f Math::Currency # forcefully installation
+--skip-satisfied CGI DBI~1.2
+http://search.cpan.org/CPAN/authors/id/D/DO/DOY/Moose-2.0604.tar.gz</code></pre>
+
+<h1 id='environment_setup'>Environment setup</h1>
+
+<p>You can set environment variables via &#8220;Jenkins/Configuration/Global properties/Environment variables&#8221; interface to adjust plugin behaviour.</p>
+
+<h2 id='cpan_mirror'>cpan_mirror</h2>
+
+<p>Setup one if you have custom cpan mirror, for example private mini cpan server.</p>
+
+<pre><code>http://my.private.cpan.local</code></pre>
+
+<h2 id='http_proxy'>http_proxy</h2>
+
+<p>Standard way to do things when you behind http proxy server.</p>
+
+<pre><code>http://my.proxy.server</code></pre>
+
+<h2 id='lc_all'>LC_ALL</h2>
+
+<p>Setup your standard encoding.</p>
+
+<pre><code>ru_RU.UTF-8</code></pre>
+</body></html>

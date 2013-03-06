@@ -46,13 +46,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
             }.last
         rescue Versionomy::Errors::ParseError => ex
-            raise ex, bold(red("Some folders name does not contain version number."))
+            raise ex, bold(on_red("Upps. It seems the directory does not hold tagged directories with version numbers. Versionomy::Errors::ParseError: #{ex.message}"))
         rescue Exception => ex
             raise ex
     end
 
     def perform(build, launcher, listener)
-        raise ArgumentError, bold(red("dist dir is required parameter")) if @dist_dir.nil? || @dist_dir.empty?
 
       # actually perform the build step
         env = build.native.getEnvironment()
@@ -69,15 +68,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
         listener.info("enabled: #{@enabled}")
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
-
-        # clean up old build directory
-        listener.info "clean up #{workspace}/#{@dist_dir} directory"
-        cmd = []
-        cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
-        cmd << "rm -rf #{workspace}/#{@dist_dir}"
-        cmd << "mkdir -p #{workspace}/#{@dist_dir}"
-        cmd << "touch #{workspace}/#{@dist_dir}/.empty"
-        build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
         # start build
         if @enabled == true 
@@ -123,6 +113,18 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             # make dist
             if @make_dist == true
+
+                raise ArgumentError, bold(red("dist dir is required parameter")) if @dist_dir.nil? || @dist_dir.empty?
+
+                # clean up dist directory
+                listener.info "clean up #{workspace}/#{@dist_dir} directory"
+                cmd = []
+                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
+                cmd << "rm -rf #{workspace}/#{@dist_dir}"
+                cmd << "mkdir -p #{workspace}/#{@dist_dir}"
+                cmd << "touch #{workspace}/#{@dist_dir}/.empty"
+                build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
+
 
                 if @lookup_last_tag == false 
                     app_s_dir  = source_dir            

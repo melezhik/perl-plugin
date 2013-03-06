@@ -16,12 +16,12 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'distributive directory', :field => 'dist_dir', :description => "path to directory where to store distributive") do
-      f.textbox
-    end
-
     f.entry(:title => 'create distributive', :field => 'make_dist', :description => "where to make cpan distrubitive from source directory") do
       f.checkbox
+    end
+
+    f.entry(:title => 'distributive directory', :field => 'dist_dir', :description => "path to directory where to store distributive") do
+      f.textbox
     end
 
     f.advanced do    

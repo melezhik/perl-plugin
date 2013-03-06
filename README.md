@@ -13,6 +13,18 @@ following packages should be installed:
 `Build perl project`
 
 - Builds and optionally create distributive for perl application
+- Build process consists of these steps:
+    - cwd to `source directory` directory
+    - if `lookup last tag` is set find 'tagged' directory with maximum version number and cwd to it
+    - setup local::lib to workspace/cpanlib directory
+    - runs "cpanmini -i ." to install everithing into workspace/cpanlib directory 
+- Make distrubitive process consists of these steps:
+    - cwd to `source directory` directory
+    - copy workspace/cpanlib into current working directory
+    - runs "perl Build.PL && ./Build manifest && ./Build dist" to create cpan distributive
+    - copies cpan distributive to workspace/`distributive` directory
+    - doing some cleanup
+ 
 
 ## parameters:
 
@@ -20,7 +32,7 @@ following packages should be installed:
 
 - `run build process`: enable/disable build step
 - `source directrory`: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )
-- `lookup last tag`: whether to look up tag with maximum version in `source directory`
+- : whether to look up tag with maximum version in `source directory`
 - `create distributive`: where to create cpan distributive ( will be stored in `distributive` directory)
 - `verbosity type`: level of verbosity
 - `enable catalyst debug mode`: run catalyst tests in debug mode

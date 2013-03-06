@@ -159,46 +159,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 File.open("#{workspace}/build/disro.url", 'w') { |f| f.write(distro_url) }
                 listener.info "distro.url: #{distro_url}"
             end
-<<<<<<< HEAD
-
-            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
-            cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
-            cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
-            cmd << "cd #{app_last_tag}"
-            cmd << "rm -rf ./cpanlib"
-            cmd << "cp -r #{workspace}/cpanlib/ ."
-            cmd << "rm -rf *.gz"
-            cmd << "rm -rf MANIFEST"
-            cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
-            cmd << "./Build dist #{module_build_verbosity}"
-            cmd << "rm -rf #{workspace}/build/"
-            cmd << "mkdir #{workspace}/build"
-            cmd << "mv *.gz #{workspace}/build/"
-            cmd << "rm -rf *.gz"
-            cmd << "rm -rf ./cpanlib"
-            build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
-
-            distroname = File.basename(Dir.glob("#{workspace}/build/*.tar.gz").last)
-
-            # basename of distributive will be added to artifatcs
-            distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{distroname}"
-            File.open("#{workspace}/build/distro.url.txt", 'w') { |f| f.write(distro_url) }
-            listener.info "distro.url: #{distro_url}"
-
-=======
->>>>>>> 6ebfc3d2abd9232d1079dca52b3694c36a0b143f
-            # add notes files
-            if File.exists? "#{workspace}/notes.markdown" 
-                listener.info "add to artifacts notes.markdown"
-                cmd = []
-                cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
-                cmd << "cp #{workspace}/notes.markdown #{workspace}/build/"
-                build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
-            end
-
-            # patches file
-            File.open("#{workspace}/build/patches.txt", 'w') {|f| f.write(@patches) }
-
 
         end # if @enabled == true
 

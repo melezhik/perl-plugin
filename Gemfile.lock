@@ -5,8 +5,7 @@ GEM
     jenkins-plugin-runtime (0.2.3)
       json
       slop (~> 3.0.2)
-    json (1.7.6)
-    json (1.7.6-java)
+    json (1.7.7-java)
     slop (3.0.4)
     term-ansicolor (1.0.7)
     versionomy (0.4.4)
@@ -14,7 +13,6 @@ GEM
 
 PLATFORMS
   java
-  ruby
 
 DEPENDENCIES
   jenkins-plugin-runtime

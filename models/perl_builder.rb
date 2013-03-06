@@ -6,7 +6,7 @@ require 'term/ansicolor'
 class PerlBuilder < Jenkins::Tasks::Builder
     include Term::ANSIColor
 
-    attr_accessor :attrs, :enabled, :verbosity_type, :catalyst_debug, :lookup_last_tag, :patches, :make_dist, :source_dir, :color_output
+    attr_accessor :attrs, :enabled, :verbose_output, :catalyst_debug, :lookup_last_tag, :patches, :make_dist, :source_dir, :color_output
 
     display_name "Build perl project" 
 
@@ -15,7 +15,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
     def initialize(attrs = {})
         @attrs = attrs
         @enabled = attrs["enabled"]
-        @verbosity_type = attrs["verbosity_type"]
+        @verbose_output = attrs["verbose_output"]
         @catalyst_debug = attrs["catalyst_debug"]
         @lookup_last_tag = attrs["lookup_last_tag"]
         @patches = attrs["patches"] || ""
@@ -57,7 +57,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         end
 
         listener.info("plugin input parameters: #{@attrs}")
-        listener.info("verbosity_type: #{@verbosity_type}")
+        listener.info("verbose_output: #{@verbose_output}")
         listener.info("enabled: #{@enabled}")
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
@@ -74,7 +74,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         # start build
         if @enabled == true 
             # setup verbosity  
-            if @verbosity_type == 'high'
+            if @verbose_output == true
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=1") }
             else  
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=0") }
@@ -84,7 +84,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
                 listener.info (@color_output == true) ? blue("apply patch: #{l}") : "apply patch: #{l}"
                 cmd = []
-                cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
+                cpan_mini_verbose = @verbose_output == false ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
                 cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
@@ -104,7 +104,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             listener.info (@color_output == true) ? blue("building last tag: #{last_tag}") : "building last tag: #{last_tag}"
             cmd = []
-            cpan_mini_verbose = @verbosity_type == 'none' ? '' : '-v'
+            cpan_mini_verbose = @verbose_output == false ? '' : '-v'
             
             cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
             cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
@@ -127,11 +127,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 listener.info (@color_output == true) ? blue("creating distributive from last tag: #{app_last_tag}") : "creating distributive from last tag: #{app_last_tag}"
                 cmd = []
                 module_build_verbosity = ''
-                if @verbosity_type == 'none' 
+                if @verbose_output == false 
                     module_build_verbosity = '--quiet'
-                elsif @verbosity_type == 'medium' 
-                    module_build_verbosity = ''
-                elsif @verbosity_type == 'High'
+                elsif @verbose_output == true
                     module_build_verbosity = '--verbose'
                 end
 

@@ -28,21 +28,16 @@ f.block do
       f.checkbox
     end
 
-    f.entry(:title => 'color output', :field => 'color_output', :description => "enable/disable color output") do
-      f.checkbox
-    end
-
     f.entry(:title => 'source directrory', :field => 'source_dir', :description => "set up source directory") do
       f.textbox
     end
-
-    f.entry(:title => 'verbosity type', :field => 'verbosity_type', :description => "type of verbosity") do
-        f.radio(:name => 'verbosity_type', :value=>'none', :checked => verbosity_type == 'none' ? true : false, :title => 'None' )
-        f.radio(:name => 'verbosity_type', :value=>'medium', :checked => verbosity_type == 'medium' ? true : false, :title => 'Medium' )
-        f.radio(:name => 'verbosity_type', :value=>'high', :checked => verbosity_type == 'high' ? true : false, :title => 'High' )
-    end
-
     f.advanced do    
+        f.entry(:title => 'color output', :field => 'color_output', :description => "enable/disable color output") do
+          f.checkbox
+        end
+        f.entry(:title => 'verbose output', :field => 'verbose_output', :description => "enable/disable verbose output") do
+          f.checkbox
+        end
         f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. see https://github.com/melezhik/perl-plugin#advanced-options for details") do
           f.textarea
         end

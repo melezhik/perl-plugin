@@ -146,7 +146,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
             # basename of distributive will be added to artifatcs
             distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/build/#{distroname}"
-            File.open("#{workspace}/build/disro.url", 'w') { |f| f.write(distro_url) }
+            File.open("#{workspace}/build/distro.url.txt", 'w') { |f| f.write(distro_url) }
             listener.info "distro.url: #{distro_url}"
 
             # add notes files

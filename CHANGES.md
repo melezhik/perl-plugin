@@ -3,6 +3,11 @@
  - perl-plugin
  - chef-plugin
  - cucumber-plugin
+ - disro.url is replaced by distro.url.txt - TODO
+- documentation: updated - TODO
+- changes in sources walker algorithm
+
+
 
 # version 0.0.3
 - bugfix for ./Build dist 

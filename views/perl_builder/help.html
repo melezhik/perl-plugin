@@ -3,11 +3,11 @@
     "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"
     "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
 <html xmlns='http://www.w3.org/1999/xhtml' xmlns:svg='http://www.w3.org/2000/svg' xml:lang='en'>
-<head><meta content='application/xhtml+xml;charset=utf-8' http-equiv='Content-type' /><title></title></head>
+<head><meta http-equiv='Content-type' content='application/xhtml+xml;charset=utf-8' /><title></title></head>
 <body>
 <h1 id='perlplugin'>perl-plugin</h1>
 
-<p>build perl applications under Jenkins CI server</p>
+<p>build and create distributive of perl application</p>
 
 <h1 id='prerequisites'>prerequisites</h1>
 
@@ -26,9 +26,9 @@
 <ul>
 <li>Builds and optionally create distributive for perl application</li>
 
-<li>Build process consists of these steps: - cwd to <code>source directory</code> directory - if <code>lookup last tag</code> is set find &#8216;tagged&#8217; directory with maximum version number and cwd to it - setup local::lib to workspace/cpanlib directory - runs &#8220;cpanmini -i .&#8221; to install everithing into workspace/cpanlib directory</li>
+<li>Build process consists of these steps: - cwd to <code>source directory</code> directory - if <code>lookup last tag</code> is set find &#8216;tagged&#8217; directory with maximum version number and cwd to it - setup local::lib to <code>workspace/cpanlib</code> directory - runs &#8220;cpanmini -i .&#8221; to install everithing into <code>workspace/cpanlib</code> directory</li>
 
-<li>Make distrubitive process consists of these steps: - cwd to <code>source directory</code> directory - copy workspace/cpanlib into current working directory - runs &#8220;perl Build.PL &amp;&amp; ./Build manifest &amp;&amp; ./Build dist&#8221; to create cpan distributive - copies cpan distributive to workspace/<code>distributive</code> directory - doing some cleanup</li>
+<li>Make distrubitive process consists of these steps: - cwd to <code>source directory</code> directory - copy workspace/cpanlib into current working directory - runs &#8220;perl Build.PL &amp;&amp; ./Build manifest &amp;&amp; ./Build dist&#8221; to create cpan distributive - copies cpan distributive to <code>distributive directory</code> - doing some cleanup</li>
 </ul>
 
 <h2 id='parameters'>parameters:</h2>
@@ -36,20 +36,28 @@
 <p><img alt='layout' src='https://raw.github.com/melezhik/perl-plugin/master/images/layout.png' /></p>
 
 <ul>
-<li><code>run build process</code>: enable/disable build step</li>
+<li><code>enabled</code>: enable/disable build step</li>
 
 <li><code>source directrory</code>: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )</li>
 
-<li><code>lookup last tag</code>: whether to look up tag with maximum version in <code>source directory</code></li>
+<li><code>lookup last tag</code>: whether to look up &#8216;tagged&#8217; directory with maximum version number in <code>source directory</code></li>
 
-<li><code>create distributive</code>: where to create cpan distributive ( will be stored in <code>distributive</code> directory)</li>
+<li><code>create distributive</code>: whether to create cpan distributive ( will be stored in <code>distributive directory</code> )</li>
 
-<li><code>verbosity type</code>: level of verbosity</li>
+<li><code>distributive directory</code> path to directory where to store distributive</li>
+</ul>
+
+<h1 id='advanced_options'>advanced options:</h1>
+
+<ul>
+<li><code>color output</code>: enable/disable color output</li>
+
+<li><code>verbose output</code>: enable/disable verbose output</li>
 
 <li><code>enable catalyst debug mode</code>: run catalyst tests in debug mode</li>
 </ul>
 
-<h1 id='advanced_options'>advanced options:</h1>
+<h2 id='patches'>patches:</h2>
 
 <p><img alt='patches text-area' src='https://raw.github.com/melezhik/perl-plugin/master/images/patches.png' /></p>
 

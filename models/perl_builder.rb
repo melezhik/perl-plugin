@@ -51,6 +51,13 @@ class PerlBuilder < Jenkins::Tasks::Builder
             raise ex
     end
 
+    def formatted_text(key,value)
+        if @color_output == true
+            string = "#{black(red(bold("#{key}")))} #{bold(black(blue("#{value}")))}"
+        else
+            string = "#{key} #{value}"
+        end
+    end
     def perform(build, launcher, listener)
 
       # actually perform the build step
@@ -80,7 +87,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info (@color_output == true) ? "#{black(red(bold("apply patch:")))} #{bold(black(blue("#{l}")))}" : "apply patch: #{l}"
+                listener.info formatted_text("apply patch:", "#{l}")
                 cmd = []
                 cpan_mini_verbose = @verbose_output == false ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -99,9 +106,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 s_dir = search_last_tag(source_dir)
             end
 
-            listener.info (@color_output == true) ? "#{black(red(bold("building from source:")))} #{bold(black(blue("#{s_dir}")))}" : "building from source: #{s_dir}"
+            listener.info formatted_text("building from source:","#{s_dir}")
             cmd = []
-            cpan_mini_verbose = @verbose_output == false ? '' : '-v'
+            cpan_mini_verbose = @verbose_output == false ? '--quiet' : '-v'
             
             cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
             cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
@@ -132,7 +139,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     app_s_dir = search_last_tag(source_dir)
                 end
 
-                listener.info (@color_output == true) ? "#{black(red(bold("creating distributive from:")))}  #{bold(black(blue("#{app_s_dir}")))}" : "creating distributive from: #{app_s_dir}"
+                listener.info formatted_text("creating distributive from:","#{app_s_dir}")
                 cmd = []
                 module_build_verbosity = ''
                 if @verbose_output == false 
@@ -149,8 +156,15 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "cp -r #{workspace}/cpanlib/ ."
                 cmd << "rm -rf *.gz"
                 cmd << "rm -rf MANIFEST"
-                cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
-                cmd << "./Build dist #{module_build_verbosity}"
+
+                if  File.exist?("#{app_s_dir}/Build.PL")
+                    cmd << "perl Build.PL #{module_build_verbosity} && ./Build manifest #{module_build_verbosity}"
+                    cmd << "./Build dist #{module_build_verbosity}"
+                elsif File.exist?("#{app_s_dir}/Makefile.PL")
+                    cmd << "rm -f MANIFEST"
+                    cmd << "perl Makefile.PL && make manifest && make dist"
+                end
+
                 cmd << "rm -rf #{workspace}/#{@dist_dir}/"
                 cmd << "mkdir -p #{workspace}/#{@dist_dir}"
                 cmd << "mv *.gz #{workspace}/#{@dist_dir}/"
@@ -163,7 +177,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 # basename of distributive will be added to artifatcs
                 distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/#{@dist_dir}/#{distroname}"
                 File.open("#{workspace}/#{@dist_dir}/distro.url", 'w') { |f| f.write(distro_url) }
-                listener.info (@color_output == true) ? "#{black(red(bold("distro.url:")))} #{bold(black(blue("#{distro_url}")))}" : "distro.url: #{distro_url}"
+                listener.info formatted_text("distro.url:","#{distro_url}")
             end
 
         end # if @enabled == true

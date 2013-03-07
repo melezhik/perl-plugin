@@ -18,13 +18,13 @@ following packages should be installed:
 - Build process consists of these steps:
     - cwd to `source directory` directory
     - if `lookup last tag` is set find 'tagged' directory with maximum version number and cwd to it
-    - setup local::lib to workspace/cpanlib directory
-    - runs "cpanmini -i ." to install everithing into workspace/cpanlib directory 
+    - setup local::lib to `workspace/cpanlib` directory
+    - runs "cpanmini -i ." to install everithing into `workspace/cpanlib` directory 
 - Make distrubitive process consists of these steps:
     - cwd to `source directory` directory
     - copy workspace/cpanlib into current working directory
     - runs "perl Build.PL && ./Build manifest && ./Build dist" to create cpan distributive
-    - copies cpan distributive to workspace/`distributive directory`
+    - copies cpan distributive to `distributive directory`
     - doing some cleanup
  
 
@@ -34,7 +34,7 @@ following packages should be installed:
 
 - `enabled`: enable/disable build step
 - `source directrory`: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )
-- `lookup last tag`: whether to look up tag with maximum version in `source directory`
+- `lookup last tag`: whether to look up 'tagged' directory with maximum version number in `source directory`
 - `create distributive`: whether to create cpan distributive ( will be stored in `distributive directory` )
 - `distributive directory` 	path to directory where to store distributive
 

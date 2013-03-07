@@ -1,6 +1,6 @@
 # perl-plugin
 
-build perl applications under Jenkins CI server 
+build and create distributive of perl application
 
 # prerequisites
 
@@ -24,7 +24,7 @@ following packages should be installed:
     - cwd to `source directory` directory
     - copy workspace/cpanlib into current working directory
     - runs "perl Build.PL && ./Build manifest && ./Build dist" to create cpan distributive
-    - copies cpan distributive to workspace/`distributive` directory
+    - copies cpan distributive to workspace/`distributive directory`
     - doing some cleanup
  
 
@@ -32,13 +32,20 @@ following packages should be installed:
 
 ![layout](https://raw.github.com/melezhik/perl-plugin/master/images/layout.png "layout")
 
-- `run build process`: enable/disable build step
+- `enabled`: enable/disable build step
 - `source directrory`: directory where build runs ( should have cpan compatible structure - have Makefile.PL or Build.PL file )
 - `lookup last tag`: whether to look up tag with maximum version in `source directory`
-- `create distributive`: where to create cpan distributive ( will be stored in `distributive` directory)
-- `enable catalyst debug mode`: run catalyst tests in debug mode
+- `create distributive`: whether to create cpan distributive ( will be stored in `distributive directory` )
+- `distributive directory` 	path to directory where to store distributive
+
 
 # advanced options:
+
+- `color output`: enable/disable color output
+- `verbose output`: enable/disable verbose output
+- `enable catalyst debug mode`: run catalyst tests in debug mode
+
+## patches:
 
 ![patches text-area](https://raw.github.com/melezhik/perl-plugin/master/images/patches.png "patches text-area")
 

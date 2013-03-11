@@ -87,7 +87,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info formatted_text("apply patch:", "#{l}")
+                listener.info formatted_text('apply patch:', l)
                 cmd = []
                 cpan_mini_verbose = @verbose_output == false ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 

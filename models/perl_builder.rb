@@ -148,6 +148,11 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     module_build_verbosity = '--verbose'
                 end
 
+                # don't echo commands. '-s' - silent.
+                if @verbose_output == false 
+                    make_maker_verbosity = '-s'
+                end
+
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
@@ -162,7 +167,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     cmd << "./Build dist #{module_build_verbosity}"
                 elsif File.exist?("#{app_s_dir}/Makefile.PL")
                     cmd << "rm -f MANIFEST"
-                    cmd << "perl Makefile.PL && make manifest && make dist"
+                    cmd << "perl Makefile.PL && make manifest #{make_maker_verbosity} && make dist #{make_maker_verbosity}"
                 end
 
                 cmd << "rm -rf #{workspace}/#{@dist_dir}/"

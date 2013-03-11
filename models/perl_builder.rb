@@ -106,7 +106,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 s_dir = search_last_tag(source_dir)
             end
 
-            listener.info formatted_text("building from source:","#{s_dir}")
+            listener.info formatted_text('building from source:', s_dir)
             cmd = []
             cpan_mini_verbose = @verbose_output == false ? '--quiet' : '-v'
             
@@ -139,7 +139,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     app_s_dir = search_last_tag(source_dir)
                 end
 
-                listener.info formatted_text("creating distributive from:","#{app_s_dir}")
+                listener.info formatted_text('creating distributive from:', app_s_dir)
                 cmd = []
                 module_build_verbosity = ''
                 if @verbose_output == false 

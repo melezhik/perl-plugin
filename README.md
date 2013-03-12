@@ -23,9 +23,9 @@ following packages should be installed:
 - Make distrubitive process consists of these steps:
     - cwd to `source directory` directory
     - copy workspace/cpanlib into current working directory
-    - runs "perl Build.PL && ./Build manifest && ./Build dist" to create cpan distributive
-    - copies cpan distributive to `distributive directory`
-    - doing some cleanup
+    - create cpan distributive ( Build.PL and Makefile.PL files are supported)
+    - copy cpan distributive to `distributive directory`
+    - doing cleanup (supplimental files are deleted)
  
 
 ## parameters:
@@ -79,8 +79,4 @@ Standard way to do things when you behind http proxy server.
 Setup your standard encoding.
 
     ru_RU.UTF-8
-
-
-
-
 

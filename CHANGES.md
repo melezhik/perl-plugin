@@ -1,10 +1,15 @@
+# version 0.0.5
+- some improvements on verbose-outpu
+- refactoring for formatted output
+- Makefile.PL support
+
 # version 0.0.4
 - split plugin on 3 parts: 
  - perl-plugin
  - chef-plugin
  - cucumber-plugin
- - disro.url is replaced by distro.url.txt - TODO
-- documentation: updated - TODO
+ - disro.url is replaced by distro.url.txt
+- documentation: updated
 - changes in sources walker algorithm
 
 

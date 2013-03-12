@@ -1,7 +1,7 @@
 Jenkins::Plugin::Specification.new do |plugin|
   plugin.name = "perl"
   plugin.display_name = "Perl Plugin"
-  plugin.version = '0.0.4'
+  plugin.version = '0.0.5'
   plugin.description = 'build perl application'
 
   # You should create a wiki-page for your plugin when you publish it, see

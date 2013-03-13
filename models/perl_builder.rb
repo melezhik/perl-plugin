@@ -65,7 +65,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             source_dir = "#{workspace}/#@source_dir"
         end
 
-        listener.info @sc.info("#{@enabled}", :title => 'enabled')
+        listener.info @sc.info(@enabled, :title => 'enabled')
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 

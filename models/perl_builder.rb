@@ -1,8 +1,7 @@
 require "versionomy"
-require 'term/ansicolor'
+require 'simple/console'
     
 class PerlBuilder < Jenkins::Tasks::Builder
-    include Term::ANSIColor
 
     attr_accessor :attrs, :enabled, :verbose_output, :catalyst_debug, :dist_dir
     attr_accessor :lookup_last_tag, :patches, :make_dist, :source_dir, :color_output
@@ -51,17 +50,10 @@ class PerlBuilder < Jenkins::Tasks::Builder
             raise ex
     end
 
-    def formatted_text(key,value)
-        if @color_output == true
-            string = "#{black(red(bold("#{key}")))} #{bold(black(blue("#{value}")))}"
-        else
-            string = "#{key} #{value}"
-        end
-        string
-    end
     def perform(build, launcher, listener)
 
       # actually perform the build step
+        @sc = Simple::Console.new(:color_output => @color_output)
         env = build.native.getEnvironment()
         workspace = build.send(:native).workspace.to_s
         build_number = build.send(:native).get_number
@@ -73,7 +65,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             source_dir = "#{workspace}/#@source_dir"
         end
 
-        listener.info("enabled: #{@enabled}")
+        listener.info @sc.info("#{@enabled}", :title => 'enabled')
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 
@@ -88,7 +80,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info formatted_text('apply patch:', l)
+                listener.info @sc.info(l, :title => 'apply patch')
                 cmd = []
                 cpan_mini_verbose = @verbose_output == false ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -107,7 +99,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 s_dir = search_last_tag(source_dir)
             end
 
-            listener.info formatted_text('building from source:', s_dir)
+            listener.info @sc.info( s_dir, :title => 'building from source')
             cmd = []
             cpan_mini_verbose = @verbose_output == false ? '--quiet' : '-v'
             
@@ -122,7 +114,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             # make dist
             if @make_dist == true
 
-                raise ArgumentError, bold(red("dist dir is required parameter")) if @dist_dir.nil? || @dist_dir.empty?
+                raise ArgumentError, @sc.error("dist dir is required parameter") if @dist_dir.nil? || @dist_dir.empty?
 
                 # clean up dist directory
                 listener.info "clean up #{workspace}/#{@dist_dir} directory"
@@ -140,7 +132,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     app_s_dir = search_last_tag(source_dir)
                 end
 
-                listener.info formatted_text('creating distributive from:', app_s_dir)
+                listener.info @sc.info(app_s_dir, :title => 'creating distributive from')
                 cmd = []
                 module_build_verbosity = ''
                 if @verbose_output == false 
@@ -183,7 +175,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 # basename of distributive will be added to artifatcs
                 distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/#{@dist_dir}/#{distroname}"
                 File.open("#{workspace}/#{@dist_dir}/distro.url", 'w') { |f| f.write(distro_url) }
-                listener.info formatted_text('distro.url:',distro_url)
+                listener.info formatted_text(distro_url, :title => 'distro.url')
             end
 
         end # if @enabled == true

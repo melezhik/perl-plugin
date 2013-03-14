@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/melezhik/simple_console.git
-  revision: 553fc2d6b630092c15bf384dd4d8de3ef16482dd
+  revision: f9f5d112e31a126f002ed973c4bc2273046f9f59
   specs:
     simple_console (0.0.1)
       logger

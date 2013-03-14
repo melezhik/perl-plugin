@@ -34,12 +34,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
       # do any setup that needs to be done before this build runs.
     end
 
-    ##
-    # Runs the step over the given build and reports the progress to the listener.
-    #
-    # @param [Jenkins::Model::Build] build on which to run this step
-    # @param [Jenkins::Launcher] launcher the launcher that can run code on the node running this build
-    # @param [Jenkins::Model::Listener] listener the listener for this build.
     def search_last_tag(directory)
             source_directory = Dir.glob("#{directory}/*").select {|f2| File.directory? f2}.sort { |x,y| 
                 Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
@@ -50,6 +44,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
             raise ex
     end
 
+    ##
+    # Runs the step over the given build and reports the progress to the listener.
+    #
+    # @param [Jenkins::Model::Build] build on which to run this step
+    # @param [Jenkins::Launcher] launcher the launcher that can run code on the node running this build
+    # @param [Jenkins::Model::Listener] listener the listener for this build.
     def perform(build, launcher, listener)
 
       # actually perform the build step

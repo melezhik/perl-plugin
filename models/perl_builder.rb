@@ -35,11 +35,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
     end
 
     def search_last_tag(directory)
+            @sc = Simple::Console.new(:color_output => @color_output)
             source_directory = Dir.glob("#{directory}/*").select {|f2| File.directory? f2}.sort { |x,y| 
                 Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
             }.last
         rescue Versionomy::Errors::ParseError => ex
-            raise ex, bold(on_red("Upps. It seems the directory does not hold tagged directories with version numbers. Versionomy::Errors::ParseError: #{ex.message}"))
+            raise ex, @sc.error("Upps. It seems the directory does not hold tagged directories with version numbers. Versionomy::Errors::ParseError: #{ex.message}")
         rescue Exception => ex
             raise ex
     end
@@ -64,6 +65,8 @@ class PerlBuilder < Jenkins::Tasks::Builder
         else
             source_dir = "#{workspace}/#@source_dir"
         end
+
+        raise @sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
 
         listener.info @sc.info("#{@enabled}", :title => 'enabled')
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror

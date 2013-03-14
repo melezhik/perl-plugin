@@ -7,7 +7,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
     attr_accessor :lookup_last_tag, :patches, :make_dist, :source_dir, :color_output
 
     display_name "Build perl project" 
-
+  
     # Invoked with the form parameters when this extension point
     # is created from a configuration screen.
     def initialize(attrs = {})

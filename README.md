@@ -26,7 +26,7 @@ following packages should be installed:
     - create cpan distributive ( Build.PL and Makefile.PL files are supported)
     - copy cpan distributive to `distributive directory`
     - doing cleanup (supplimental files are deleted)
- 
+   
 
 ## parameters:
 

@@ -108,8 +108,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
             
             cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
             cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
-            cmd << "export LC_ALL=ru_RU.UTF-8 && cd #{s_dir}"
+            cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
+            cmd << "cd #{s_dir}"
             cmd << "eval $(perl -Mlocal::lib=#{workspace}/cpanlib)"
             cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0

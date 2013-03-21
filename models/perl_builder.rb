@@ -35,12 +35,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
     end
 
     def search_last_tag(directory)
-            @sc = Simple::Console.new(:color_output => @color_output)
+            sc = Simple::Console.new(:color_output => @color_output)
             source_directory = Dir.glob("#{directory}/*").select {|f2| File.directory? f2}.sort { |x,y| 
                 Versionomy.parse(File.basename(x).sub(/.*-/){""}) <=> Versionomy.parse(File.basename(y).sub(/.*-/){""}) 
             }.last
         rescue Versionomy::Errors::ParseError => ex
-            raise ex, @sc.error("Upps. It seems the directory does not hold tagged directories with version numbers. Versionomy::Errors::ParseError: #{ex.message}")
+            raise ex, sc.error("Upps. It seems the directory does not hold tagged directories with version numbers. Versionomy::Errors::ParseError: #{ex.message}")
         rescue Exception => ex
             raise ex
     end
@@ -54,7 +54,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
     def perform(build, launcher, listener)
 
       # actually perform the build step
-        @sc = Simple::Console.new(:color_output => @color_output)
+        sc = Simple::Console.new(:color_output => @color_output)
         env = build.native.getEnvironment()
         workspace = build.send(:native).workspace.to_s
         build_number = build.send(:native).get_number
@@ -66,9 +66,9 @@ class PerlBuilder < Jenkins::Tasks::Builder
             source_dir = "#{workspace}/#@source_dir"
         end
 
-        raise @sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
+        raise sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
 
-        listener.info @sc.info("#{@enabled}", :title => 'enabled')
+        listener.info sc.info("#{@enabled}", :title => 'enabled')
         cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
         cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 
@@ -83,7 +83,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 
             # apply patches
             @patches.split("\n").map {|l| l.chomp }.reject {|l| l.nil? || l.empty? || l =~ /^\s+#/ || l =~ /^#/ }.map{ |l| l.sub(/#.*/){""} }.each do |l|
-                listener.info @sc.info(l, :title => 'apply patch')
+                listener.info sc.info(l, :title => 'apply patch')
                 cmd = []
                 cpan_mini_verbose = @verbose_output == false ? '' : '-v'
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
@@ -102,7 +102,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 s_dir = search_last_tag(source_dir)
             end
 
-            listener.info @sc.info( s_dir, :title => 'building from source')
+            listener.info sc.info( s_dir, :title => 'building from source')
             cmd = []
             cpan_mini_verbose = @verbose_output == false ? '--quiet' : '-v'
             
@@ -118,7 +118,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             # make dist
             if @make_dist == true
 
-                raise ArgumentError, @sc.error("dist dir is required parameter") if @dist_dir.nil? || @dist_dir.empty?
+                raise ArgumentError, sc.error("dist dir is required parameter") if @dist_dir.nil? || @dist_dir.empty?
 
                 # clean up dist directory
                 listener.info "clean up #{workspace}/#{@dist_dir} directory"
@@ -136,7 +136,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     app_s_dir = search_last_tag(source_dir)
                 end
 
-                listener.info @sc.info(app_s_dir, :title => 'creating distributive from')
+                listener.info sc.info(app_s_dir, :title => 'creating distributive from')
                 cmd = []
                 module_build_verbosity = ''
                 if @verbose_output == false 
@@ -179,7 +179,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 # basename of distributive will be added to artifatcs
                 distro_url = "#{env['JENKINS_URL']}/job/#{job}/#{build_number}/artifact/#{@dist_dir}/#{distroname}"
                 File.open("#{workspace}/#{@dist_dir}/distro.url", 'w') { |f| f.write(distro_url) }
-                listener.info @sc.info(distro_url, :title => 'distro.url')
+                listener.info sc.info(distro_url, :title => 'distro.url')
             end
 
         end # if @enabled == true

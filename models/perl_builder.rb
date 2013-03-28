@@ -22,9 +22,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
         @color_output = attrs["color_output"]
         @dist_dir = attrs["dist_dir"]
     end
-    def default_cpan_mirror
-        "http://cpan.dk"
-    end
     ##
     # Runs before the build begins
     #
@@ -69,11 +66,12 @@ class PerlBuilder < Jenkins::Tasks::Builder
         raise sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
 
         listener.info sc.info("#{@enabled}", :title => 'enabled')
-        cpan_mirror = env['cpan_mirror'] || default_cpan_mirror
-        cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
 
         # start build
         if @enabled == true 
+            # setup cpan mirror  
+            cpan_mirror = env['cpan_mirror']
+            cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
             # setup verbosity  
             if @verbose_output == true
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=1") }

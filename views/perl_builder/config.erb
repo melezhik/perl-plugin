@@ -12,6 +12,10 @@ f.block do
       f.textbox
     end
 
+    f.entry(:title => 'install base', :field => 'install_base', :description => "install base directory") do
+      f.textbox
+    end
+
     f.entry(:title => 'lookup last tag', :field => 'lookup_last_tag', :description => "whether to look up tag with maximum version") do
       f.checkbox
     end
@@ -33,6 +37,9 @@ f.block do
         end
         f.entry(:title => 'enable catalyst debug mode', :field => 'catalyst_debug', :description => "run catalyst tests in debug mode") do
           f.checkbox
+        end
+        f.entry(:title => 'enviroment variables', :field => 'env_vars', :description => "set enviroment variables") do
+          f.textbox
         end
         f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. see https://github.com/melezhik/perl-plugin#advanced-options for details") do
           f.textarea

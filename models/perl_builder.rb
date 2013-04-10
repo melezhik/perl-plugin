@@ -44,14 +44,25 @@ class PerlBuilder < Jenkins::Tasks::Builder
             raise ex
     end
 
-    def evaluate_env_vars(variables)
-        unless variables.nil? || variables.empty?
-            variables.gsub!(/(\s+=\s+|=\s+|\s+=)/, '=')
-            vars = variables.split(' ').map{|x| "export #{x}"}.join(' && ')
+    def evaluate_env_vars(string)
+
+        retval = nil
+
+        if @environment_variables_string.nil?
+            unless string.nil? || string.empty?
+                string.gsub!(/(\s+=\s+|=\s+|\s+=)/, '=')
+                @environment_variables_string = string.split(' ').map{|x| "export #{x}"}.join(' && ')
+                retval = @environment_variables_string
+            else
+                @environment_variables_string = ''
+                retval = @environment_variables_string
+            end
         else
-            vars = ''
+            retval = @environment_variables_string
         end
-        vars
+
+        retval
+
     end
 
     ##

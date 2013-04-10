@@ -90,8 +90,6 @@ class PerlBuilder < Jenkins::Tasks::Builder
             # setup cpan mirror  
             cpan_mirror = env['cpan_mirror']
             cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
-            # set custom environment variables 
-            env_vars = evaluate_env_vars(@env_vars)
             # setup verbosity  
             if @verbose_output == true
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=1") }

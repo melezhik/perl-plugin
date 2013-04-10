@@ -46,7 +46,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
 
     def set_env_vars(variables)
         unless variables.nil? || variables.empty?
-            variables.gsub!(/(\s*=\s*|=\s*|\s*=)/, '=')
+            variables.gsub!(/(\s+=\s+|=\s+|\s+=)/, '=')
             vars = variables.split(' ').map{|x| "export #{x}"}.join(' && ')
         else
             vars = ''
@@ -76,7 +76,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         end
 
         raise sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
-        raise sc.error("Source directory couldn't be workspace") if File.expand_path(workspace) == File.expand_path(@install_base.gsub!(/\s*/, ''),workspace)
+        raise sc.error("Source directory couldn't be workspace") if File.expand_path(workspace) == File.expand_path(@install_base.gsub!(/\s+/, ''),workspace)
 
         listener.info sc.info("#{@enabled}", :title => 'enabled')
 
@@ -172,7 +172,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/#@install_base)"
                 cmd << "cd #{app_s_dir}"
-                cmd << "rm -rf ./#@install_base"
+                cmd << "rm -rf #{workspace}/#@install_base"
                 cmd << "cp -r #{workspace}/#@install_base/ ."
                 cmd << "rm -rf *.gz"
                 cmd << "rm -rf MANIFEST"
@@ -189,7 +189,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "mkdir -p #{workspace}/#{@dist_dir}"
                 cmd << "mv *.gz #{workspace}/#{@dist_dir}/"
                 cmd << "rm -rf *.gz"
-                cmd << "rm -rf ./#@install_base"
+                cmd << "rm -rf #{workspace}/#@install_base"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
                 distroname = File.basename(Dir.glob("#{workspace}/#{@dist_dir}/*.tar.gz").last)

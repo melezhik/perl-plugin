@@ -78,10 +78,10 @@ class PerlBuilder < Jenkins::Tasks::Builder
             @install_base = 'cpanlib'
         end
 
-        install_path = File.expand_path(@install_base.gsub(/\s+/, ''),workspace)
+        app_install_base = File.expand_path(@install_base.gsub(/\s+/, ''),workspace)
 
         raise sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
-        raise sc.error("Source directory couldn't be workspace") if File.expand_path(workspace) == install_path
+        raise sc.error("Source directory couldn't be workspace") if File.expand_path(workspace) == app_install_base
 
         listener.info sc.info("#{@enabled}", :title => 'enabled')
 
@@ -109,7 +109,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
-                cmd << "eval $(perl -Mlocal::lib=#{install_path})"
+                cmd << "eval $(perl -Mlocal::lib=#{app_install_base})"
 
                 cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} #{l}"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
@@ -132,7 +132,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
             cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
             cmd << "cd #{s_dir}"
-            cmd << "eval $(perl -Mlocal::lib=#{install_path})"
+            cmd << "eval $(perl -Mlocal::lib=#{app_install_base})"
             cmd << "cpanm --curl #{cpan_mini_verbose} #{cpan_source_chunk} ."
             build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
@@ -177,8 +177,8 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/#@install_base)"
                 cmd << "cd #{app_s_dir}"
-                cmd << "rm -rf #{install_path}"
-                cmd << "cp -r #{install_path}/ ."
+                cmd << "rm -rf #{app_install_base}"
+                cmd << "cp -r #{app_install_base}/ ."
                 cmd << "rm -rf *.gz"
                 cmd << "rm -rf MANIFEST"
 
@@ -194,7 +194,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << "mkdir -p #{workspace}/#{@dist_dir}"
                 cmd << "mv *.gz #{workspace}/#{@dist_dir}/"
                 cmd << "rm -rf *.gz"
-                cmd << "rm -rf #{install_path}"
+                cmd << "rm -rf #{app_install_base}"
                 build.abort unless launcher.execute("bash", "-c", cmd.join(' && '), { :out => listener } ) == 0
 
                 distroname = File.basename(Dir.glob("#{workspace}/#{@dist_dir}/*.tar.gz").last)

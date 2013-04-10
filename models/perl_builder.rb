@@ -76,7 +76,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
         end
 
         raise sc.error("Source directory does not exist.") if File.directory?(source_dir) == false
-        raise sc.error("Source directory couldn't be dot") if @install_base == '.'
+        raise sc.error("Source directory couldn't be workspace") if File.expand_path(workspace) == File.expand_path(@install_base.gsub!(/\s*/, ''),workspace)
 
         listener.info sc.info("#{@enabled}", :title => 'enabled')
 

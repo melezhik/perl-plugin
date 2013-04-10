@@ -44,7 +44,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             raise ex
     end
 
-    def set_env_vars(variables)
+    def evaluate_env_vars(variables)
         unless variables.nil? || variables.empty?
             variables.gsub!(/(\s+=\s+|=\s+|\s+=)/, '=')
             vars = variables.split(' ').map{|x| "export #{x}"}.join(' && ')
@@ -91,7 +91,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             cpan_mirror = env['cpan_mirror']
             cpan_source_chunk = (cpan_mirror.nil? || cpan_mirror.empty?) ? "" :  "--mirror #{cpan_mirror}  --mirror-only"
             # set custom environment variables 
-            env_vars = set_env_vars(@env_vars)
+            env_vars = evaluate_env_vars(@env_vars)
             # setup verbosity  
             if @verbose_output == true
                 File.open("#{workspace}/modulebuildrc", 'w') {|f| f.write("test verbose=1") }
@@ -104,7 +104,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 listener.info sc.info(l, :title => 'apply patch')
                 cmd = []
                 cpan_mini_verbose = @verbose_output == false ? '' : '-v'
-                cmd << set_env_vars(@env_vars)
+                cmd << evaluate_env_vars(@env_vars)
                 cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
                 cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
@@ -126,7 +126,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
             cmd = []
             cpan_mini_verbose = @verbose_output == false ? '--quiet' : '-v'
             
-            cmd << set_env_vars(@env_vars)
+            cmd << evaluate_env_vars(@env_vars)
             cmd << "export CATALYST_DEBUG=1" if @catalyst_debug == true 
             cmd << "export MODULEBUILDRC=#{workspace}/modulebuildrc"
             cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
@@ -144,7 +144,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 # clean up dist directory
                 listener.info "clean up #{workspace}/#{@dist_dir} directory"
                 cmd = []
-                cmd << set_env_vars(@env_vars)
+                cmd << evaluate_env_vars(@env_vars)
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "rm -rf #{workspace}/#{@dist_dir}"
                 cmd << "mkdir -p #{workspace}/#{@dist_dir}"
@@ -172,7 +172,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                     make_maker_verbosity = '-s'
                 end
 
-                cmd << set_env_vars(@env_vars)
+                cmd << evaluate_env_vars(@env_vars)
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
                 cmd << "eval $(perl -Mlocal::lib=#{workspace}/#@install_base)"

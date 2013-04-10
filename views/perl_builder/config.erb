@@ -39,7 +39,7 @@ f.block do
           f.checkbox
         end
         f.entry(:title => 'enviroment variables', :field => 'env_vars', :description => "set enviroment variables") do
-          f.textbox
+          f.expandableTextbox
         end
         f.entry(:title => 'patches', :field => 'patches', :description => "apply your patches. see https://github.com/melezhik/perl-plugin#advanced-options for details") do
           f.textarea

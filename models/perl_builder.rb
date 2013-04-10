@@ -184,7 +184,7 @@ class PerlBuilder < Jenkins::Tasks::Builder
                 cmd << evaluate_env_vars(@env_vars)
                 cmd << "export LC_ALL=#{env['LC_ALL']}" unless ( env['LC_ALL'].nil? || env['LC_ALL'].empty? )
                 cmd << "export PERL5LIB=#{env['PERL5LIB']}" unless ( env['PERL5LIB'].nil? || env['PERL5LIB'].empty? )
-                cmd << "eval $(perl -Mlocal::lib=#{workspace}/#@install_base)"
+                cmd << "eval $(perl -Mlocal::lib=#{app_install_base})"
                 cmd << "cd #{app_s_dir}"
                 cmd << "rm -rf #{app_install_base}"
                 cmd << "cp -r #{app_install_base}/ ."
